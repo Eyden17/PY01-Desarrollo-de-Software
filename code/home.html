@@ -3,9 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Inicio de sesión</title>
+    <link rel="stylesheet" href="assets/css/home.css">
 </head>
 <body>
-    
+    <div class="container">
+        <!-- Barra de navegación -->
+        <nav class="navbar">
+            <a href="home.html">
+                <img class="logo" src="assets/img/logo_example.png" alt="Logo de la página">
+            </a>
+            <div class="nav-links">
+                <button onclick="openModal('about')">About</button>
+                <button onclick="openModal('contact')">Contact</button>
+            </div>
+        </nav>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <h1>Aqui va el iniciar sesion |  Crear cuenta</h1>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Banco Astralis. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <div id="modal-body">
+                <!-- El contenido se carga aca con el JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/home.js"></script>
 </body>
 </html>
