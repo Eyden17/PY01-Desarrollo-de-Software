@@ -1,0 +1,23 @@
+{
+  "name": "py01-desarrollo-de-software",
+  "version": "1.0.0",
+  "description": "This is the first part of a Software Design project. It represents an initial prototype, which will serve as the foundation for developing the complete banking system in the future.\r By: Eyden & Jose Andres.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VargasAPI/PY01-Desarrollo-de-Software.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VargasAPI/PY01-Desarrollo-de-Software/issues"
+  },
+  "homepage": "https://github.com/VargasAPI/PY01-Desarrollo-de-Software#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
