@@ -189,17 +189,3 @@ body {
   font-weight: 600;
 }
 /* ================================== */
-
-/*Footer*/
-.footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.4rem;
-  margin-top: auto; 
-}
-.footer p {
-  margin: 0;
-  font-weight: 300;
-}

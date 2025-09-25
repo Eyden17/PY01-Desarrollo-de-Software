@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "../css/home.css";
+import logo from "../img/logo_example.png";
+import Footer from "../components/Footer";
 
 function Home() {
   const [modalType, setModalType] = useState(null);
@@ -16,14 +18,10 @@ function Home() {
     <div className="container">
       {/* Barra de navegación */}
       <nav className="navbar">
-        <a href="home.html">
-          <img
-            className="logo"
-            src="../img/logo_example.png"
-          
-            alt="Logo de la página"
-          />
+        <a href="/">
+           <img className="logo" src={logo} alt="Logo de la página" />
         </a>
+
         <div className="nav-links">
           <button onClick={() => openModal("about")}>About</button>
           <button onClick={() => openModal("contact")}>Contact</button>
@@ -35,10 +33,10 @@ function Home() {
         <h1>Aqui va el iniciar sesión | Crear cuenta</h1>
       </main>
 
-      {/* Footer */}
-      <footer className="footer">
-        <p>&copy; 2025 Banco Astralis. Todos los derechos reservados.</p>
-      </footer>
+       {/* Footer reutilizable */}
+      <Footer />
+
+   
 
       {/* Modal */}
       {modalType && (
