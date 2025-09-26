@@ -1,31 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 
-html {
-  box-sizing: border-box;
-  font-size: 62.5%;
-  /* HACK: 1rem = 10px */
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-  /* 16px */
-  font-size: 1.6rem;
-  /*line-height es el espacio entre lineas*/
-  line-height: 2;  
-  margin: 0;
-  padding: 0;
-}
-
-/*glogales*/
-
-
 /* ===== LAYOUT PRINCIPAL ===== */
 .container {
   min-height: 100vh;
@@ -56,7 +31,7 @@ body {
     font-family: inherit;
     color: #333333de;
     cursor: pointer;
-    padding: 0.5 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 4px;
     transition: color 0.3s;
 }
@@ -66,14 +41,17 @@ body {
   background-color: #f0f0f0;
   color: tomato;
 }
-
+/* MAIN CONTENT */
 .main-content{
+    background: linear-gradient(135deg, #dc2626, #991b1b);
     color: #333;
-    padding: 4rem 2rem;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 60vh;/* Asegura altura mínima */
+    flex: 1; /* Toma todo el espacio disponible */
+    width: 100vw; /* Ancho completo de viewport */
+    position: relative; /* Para posicionamiento absoluto si es necesario */
 }
 
 .main-content h1 {
@@ -188,4 +166,21 @@ body {
   color: #333;
   font-weight: 600;
 }
-/* ================================== */
+/* ===============RESPONSIVE=================== */
+/*El estilo del media es el de la pantalla grande y lo de afuera es lo del mobile*/
+
+@media (min-width: 768px) {
+  .navbar {
+    padding: 1rem 2rem;
+  }
+     .nav-links button {
+    font-size: 1.6rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .logo {
+    height: 6rem;
+    width: 6rem;
+  }
+  
+}

@@ -1,0 +1,28 @@
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+  /* HACK: 1rem = 10px */
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden; /* Evita scroll horizontal */
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  /* 16px */
+  font-size: 1.6rem;
+  /*line-height es el espacio entre lineas*/
+  line-height: 2;  
+  margin: 0;
+  padding: 0;
+}

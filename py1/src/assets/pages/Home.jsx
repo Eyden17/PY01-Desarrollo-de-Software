@@ -2,6 +2,8 @@ import { useState } from "react";
 import "../css/home.css";
 import logo from "../img/logo_example.png";
 import Footer from "../components/Footer";
+import modalContent from "../js/home.js";
+import LoginRegisterForm from "./Login.jsx";
 
 function Home() {
   const [modalType, setModalType] = useState(null);
@@ -13,6 +15,8 @@ function Home() {
   const closeModal = () => {
     setModalType(null);
   };
+
+  
 
   return (
     <div className="container">
@@ -30,26 +34,24 @@ function Home() {
 
       {/* Contenido principal */}
       <main className="main-content">
-        <h1>Aqui va el iniciar sesión | Crear cuenta</h1>
+          <LoginRegisterForm />
       </main>
 
        {/* Footer reutilizable */}
       <Footer />
 
-   
-
       {/* Modal */}
-      {modalType && (
-        <div className="modal-overlay">
+        {modalType && (
+        <div
+          className="modal-overlay show"
+          onClick={(e) => e.target === e.currentTarget && closeModal()}
+        >
           <div className="modal-content">
             <button className="close-modal" onClick={closeModal}>
               &times;
             </button>
-            <div id="modal-body">
-              {/* Aquí podrías renderizar dinámicamente el contenido según modalType */}
-              {modalType === "about" && <p>Información sobre nosotros...</p>}
-              {modalType === "contact" && <p>Formulario de contacto...</p>}
-            </div>
+            <h2 className="modal-title">{modalContent[modalType].title}</h2>
+            <div className="modal-text">{modalContent[modalType].content}</div>
           </div>
         </div>
       )}

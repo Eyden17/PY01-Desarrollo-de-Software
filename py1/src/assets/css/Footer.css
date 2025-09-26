@@ -1,15 +1,23 @@
-/* Footer */
+
 .footer {
   background-color: #333;
   color: white;
   text-align: center;
   padding: 2rem;
   font-size: 1.4rem;
-  margin-top: auto;
+  margin-top: 0;
+  width: 100%; /* Asegura ancho completo */
 }
 
 .footer p {
   margin: 0;
   font-weight: 300;
 }
-/* ================================== */
+/*El estilo del media es el de la pantalla grande y lo de afuera es lo del mobile*/
+@media (min-width: 768px) {
+  .footer {
+    font-size: 1.6rem;
+    padding: 3rem;
+  }
+  
+}
