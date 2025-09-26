@@ -95,7 +95,7 @@
   flex-direction: column;
   gap: 1.5rem;
 }
-/* Estilos de los inputs*/
+/* Estilos de los inputs y tamano fuente*/
 .form-input {
   width: 100%;
    padding: 1rem 1rem; /* vertical 1rem, horizontal 1rem */
@@ -103,7 +103,7 @@
   border: none;
   border-radius: 0.5rem;
   color: #374151;
-  font-size: 1rem;
+  font-size: 1.2rem;
   outline: none;
   transition: all 0.3s ease;
 }
@@ -116,7 +116,7 @@
   background: white;
   box-shadow: 0 0 0 2px #dc2626;
 }
-
+/*Estilos para los botones de Acceder*/
 .form-button {
   width: 100%;
   background: #dc2626;
@@ -137,6 +137,29 @@
 }
 
 .form-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
+}
+
+ /* Boton olvido su contraseña*/
+.recover-password-button{
+  width: 100%;
+  background: #dc2626;
+  color: white;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: .5rem;
+  transition: all 0.3s ease;
+}
+.recover-password-button:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+.recover-password-button:focus {
   outline: none;
   box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
 }
