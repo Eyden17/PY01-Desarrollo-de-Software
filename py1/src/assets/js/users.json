@@ -1,0 +1,12 @@
+{
+  "testUser": {
+    "identificacion": "CR",
+    "identificacionNumero": "1-1234-5678",
+    "username": "josesolano",
+    "name": "José Solano Vargas",
+    "dob": "1990-05-15",
+    "phone": "+506 8888-9999",
+    "email": "josesolanovargas13@gmail.com",
+    "password": "123456"
+  }
+}

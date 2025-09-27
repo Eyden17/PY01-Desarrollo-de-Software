@@ -1,6 +1,5 @@
 /* Contenedor principal - Mobile First */
 .main-container {
- 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,6 +72,7 @@
   height: 40rem;
   width: 70rem;
 }
+
 /* Contenido del formulario */
 .form-content {
   max-width: 28rem;
@@ -88,17 +88,17 @@
   margin-bottom: 2rem;
 }
 
-
 /* Grupo de inputs */
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
+
 /* Estilos de los inputs y tamano fuente*/
 .form-input {
   width: 100%;
-   padding: 1rem 1rem; /* vertical 1rem, horizontal 1rem */
+  padding: 1rem 1rem; /* vertical 1rem, horizontal 1rem */
   background: #e5e7eb;
   border: none;
   border-radius: 0.5rem;
@@ -116,6 +116,7 @@
   background: white;
   box-shadow: 0 0 0 2px #dc2626;
 }
+
 /*Estilos para los botones de Acceder*/
 .form-button {
   width: 100%;
@@ -141,8 +142,8 @@
   box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
 }
 
- /* Boton olvido su contraseña*/
-.recover-password-button{
+/* Boton olvido su contraseña*/
+.recover-password-button {
   width: 100%;
   background: #dc2626;
   color: white;
@@ -155,10 +156,12 @@
   margin-top: .5rem;
   transition: all 0.3s ease;
 }
+
 .recover-password-button:hover {
   background: #b91c1c;
   transform: translateY(-1px);
 }
+
 .recover-password-button:focus {
   outline: none;
   box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
@@ -175,9 +178,8 @@
 }
 
 .register-header {
-   margin-bottom: .5rem;
-   display: flex;
-
+  margin-bottom: .5rem;
+  display: flex;
 }
 
 .back-button {
@@ -189,7 +191,6 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-  
 }
 
 .back-button:hover {
@@ -230,6 +231,43 @@
 
 .input-row {
   display: flex;
+}
+
+/* Nuevo: Estilo para campos con etiquetas */
+.input-row-labeled {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  margin-left: 0.25rem;
+
+}
+
+/* Estilos para el campo de teléfono con prefijo */
+.input-row.flex {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prefix {
+  background: #e5e7eb;
+  padding: 1rem;
+  border-radius: 0.5rem 0 0 0.5rem;
+  color: #374151;
+  font-size: 1.2rem;
+  font-weight: 500;
+  border-right: 1px solid #d1d5db;
+}
+
+.input-row.flex .form-input {
+  border-radius: 0 0.5rem 0.5rem 0;
+  flex: 1;
 }
 
 .terms-row {
@@ -290,16 +328,118 @@
   }
 }
 
+/* Mobile First - Optimizaciones para móvil */
+.main-container {
+  min-height: auto;
+  padding: 1rem;
+}
+
+.form-wrapper {
+  min-height: auto;
+}
+
+.form-panel {
+  height: auto;
+  width: 100%;
+  min-height: auto;
+}
+
+.promo-panel {
+  order: 2;
+  min-height: 150px;
+}
+
+.form-panel {
+  order: 1;
+}
+
+.register-full-panel {
+  padding: 1rem;
+  min-height: auto;
+}
+
+.form-content-center {
+  max-width: 100%;
+  justify-content: flex-start;
+  padding-top: 1rem;
+}
+
+.input-group-large {
+  gap: 1rem;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-title-large {
+  font-size: 1.5rem;
+}
+
+.form-subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+    font-size: 1.2rem;
+}
+
+.form-input {
+  font-size: 1rem;
+  padding: 0.875rem;
+}
+
+.prefix {
+  padding: 0.875rem;
+  font-size: 1rem;
+}
+
+.checkbox-text {
+  font-size: 1.1rem;
+}
+
 /* Desktop y pantallas grandes */
 @media (min-width: 768px) {
+  .main-container {
+    padding: 0.5rem;
+  }
+  
   .form-wrapper {
     flex-direction: row;
     max-width: 64rem;
   }
   
+  .promo-panel {
+    order: 0;
+    min-height: auto;
+  }
+  
+  .form-panel {
+    order: 0;
+    height: 40rem;
+    width: 70rem;
+  }
+  
   .promo-panel,
   .form-panel {
     padding: 3rem;
+  }
+  
+  .register-full-panel {
+    padding: 2rem;
+    min-height: 500px;
+  }
+  
+  .form-content-center {
+    max-width: 32rem;
+    justify-content: center;
+    padding-top: 0;
+  }
+  
+  .input-group-large {
+    gap: 1.25rem;
   }
   
   .promo-title {
@@ -308,9 +448,33 @@
   
   .form-title {
     font-size: 2rem;
+    margin-bottom: 2rem;
   }
   
   .form-title-large {
     font-size: 2.25rem;
   }
+  
+  .form-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .input-label {
+    font-size: 1.2rem;
+  }
+  
+  .form-input {
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+  
+  .prefix {
+    padding: 1rem;
+    font-size: 1.2rem;
+  }
+
+    .checkbox-text {
+  font-size: 1.2rem;
 }
+  }

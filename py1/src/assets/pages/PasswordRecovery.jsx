@@ -5,7 +5,7 @@ export default function PasswordRecovery({ onClose, onSuccess }) {
   const [step, setStep] = useState(1); // 1: solicitar datos, 2: nueva contraseña
   const [recoveryData, setRecoveryData] = useState({
     email: "",
-    identification: "",
+    username: "",
   });
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
@@ -14,10 +14,10 @@ export default function PasswordRecovery({ onClose, onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendRecoveryEmail = async () => {
-    const { email, identification } = recoveryData;
+    const { email, username } = recoveryData;
     
     // Validaciones
-    if (!email || !identification) {
+    if (!email || !username) {
       alert("Por favor complete todos los campos.");
       return;
     }
@@ -27,8 +27,8 @@ export default function PasswordRecovery({ onClose, onSuccess }) {
       return;
     }
 
-    if (!/^[0-9]+$/.test(identification)) {
-      alert("La identificación solo puede contener números.");
+    if (!/^[a-z0-9._-]{4,20}$/.test(username)) {
+      alert("El usuario debe tener entre 4 y 20 caracteres, usando solo minúsculas, números o . _ -");
       return;
     }
 
@@ -82,11 +82,11 @@ export default function PasswordRecovery({ onClose, onSuccess }) {
         </div>
 
         {step === 1 ? (
-          // Paso 1: Solicitar email e identificación
+          // Paso 1: Solicitar email e usuario
           <div className="recovery-step">
             <h2 className="form-title-large">Recuperar Contraseña</h2>
             <p className="form-subtitle">
-              Ingrese su email e identificación para recibir las instrucciones de recuperación
+              Ingrese su email y usuario para recibir las instrucciones de recuperación
             </p>
 
             <div className="input-group-large">
@@ -102,11 +102,11 @@ export default function PasswordRecovery({ onClose, onSuccess }) {
               
               <input
                 type="text"
-                placeholder="Número de Identificación"
+                placeholder="Usuario"
                 className="form-input"
-                value={recoveryData.identification}
+                value={recoveryData.username}
                 onChange={(e) =>
-                  setRecoveryData({ ...recoveryData, identification: e.target.value })
+                  setRecoveryData({ ...recoveryData, username: e.target.value })
                 }
               />
 
