@@ -5,6 +5,8 @@ import Footer from "../components/Footer";
 import modalContent from "../js/home.js";
 import LoginRegisterForm from "./Login.jsx";
 
+
+
 function Home() {
   const [modalType, setModalType] = useState(null);
 

@@ -478,3 +478,84 @@
   font-size: 1.2rem;
 }
   }
+/* Estilos para la sección de términos y condiciones */
+.terms-row {
+  margin: 20px 0;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  gap: 12px;
+  line-height: 1.5;
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.checkbox-text {
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* Estilos para el enlace de términos y condiciones */
+.terms-link {
+  color: #3b82f6 !important;
+  text-decoration: underline !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  font: inherit !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.terms-link:hover {
+  color: #2563eb !important;
+  text-decoration-thickness: 2px !important;
+}
+
+.terms-link:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.terms-link:active {
+  color: #1d4ed8 !important;
+  transform: translateY(1px);
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+  .terms-row {
+    margin: 16px 0;
+    padding: 12px;
+  }
+  
+  .checkbox-text {
+    font-size: 0.9rem;
+  }
+  
+  .checkbox-input {
+    width: 16px;
+    height: 16px;
+  }
+}

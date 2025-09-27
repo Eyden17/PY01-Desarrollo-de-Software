@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import "../css/Login.css";
 import PasswordRecovery from "./PasswordRecovery.jsx";
+import TermsAndConditionsModal from "./TermsAndConditionsModal.jsx";
 
 export default function LoginRegisterForm() {
   const [showLogin, setShowLogin] = useState(true);
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [registerData, setRegisterData] = useState({
     identificacion: "",
@@ -68,6 +71,20 @@ export default function LoginRegisterForm() {
     }
   };
 
+  // Manejo de términos y condiciones
+  const handleTermsCheckboxClick = (e) => {
+    e.preventDefault(); // Previene el cambio automático del checkbox
+    setShowTermsModal(true);
+  };
+
+  const handleTermsAccept = () => {
+    setTermsAccepted(true);
+  };
+
+  const handleTermsModalClose = () => {
+    setShowTermsModal(false);
+  };
+
   //Validacion para Registro.
   const handleRegistrarme = () => {
     const {
@@ -94,6 +111,12 @@ export default function LoginRegisterForm() {
       !username
     ) {
       alert("Por favor complete todos los campos.");
+      return;
+    }
+
+    // Validación de términos y condiciones
+    if (!termsAccepted) {
+      alert("Debe aceptar los términos y condiciones para continuar.");
       return;
     }
 
@@ -158,7 +181,7 @@ export default function LoginRegisterForm() {
       return;
     }
 
-    alert("✅ Registro exitoso (aquí iría la lógica real)");
+    alert("Registro exitoso ");
      // Reinicia los valores del formulario
     setRegisterData({
       identificacion: "",
@@ -171,6 +194,9 @@ export default function LoginRegisterForm() {
       password: "",
       confirmPassword: "",
     });
+
+    // Reset términos y condiciones
+    setTermsAccepted(false);
 
     // Pasar a login automáticamente
     toggleToLogin();
@@ -186,6 +212,8 @@ export default function LoginRegisterForm() {
 
   const backToLogin = () => {
     setShowLogin(true);
+    // Reset términos cuando regresa al login
+    setTermsAccepted(false);
   };
 
   const handleOpenPasswordRecovery = () => {
@@ -444,10 +472,20 @@ export default function LoginRegisterForm() {
                       <input
                         type="checkbox"
                         className="checkbox-input"
+                        checked={termsAccepted}
+                        onChange={handleTermsCheckboxClick}
                         required
                       />
                       <span className="checkbox-text">
-                        Acepto los términos y condiciones del servicio bancario
+                        Acepto los{" "}
+                        <button
+                          type="button"
+                          onClick={() => setShowTermsModal(true)}
+                          className="terms-link"
+                        >
+                          términos y condiciones
+                        </button>{" "}
+                        del servicio bancario
                       </span>
                     </label>
                   </div>
@@ -472,6 +510,13 @@ export default function LoginRegisterForm() {
           onSuccess={handlePasswordRecoverySuccess}
         />
       )}
+
+      {/* Modal de Términos y Condiciones */}
+      <TermsAndConditionsModal
+        isOpen={showTermsModal}
+        onClose={handleTermsModalClose}
+        onAccept={handleTermsAccept}
+      />
     </>
   );
 }
