@@ -65,6 +65,11 @@ export default function LoginRegisterForm() {
 
   //Validacion para acceder.
   const handleAcceder = () => {
+
+    // TESTING PURPOSES
+    window.location.href = "/dashboard";
+    return;
+
     console.log("Datos de inicio de sesión:", loginData);
     const { username, password } = loginData;
     
@@ -494,7 +499,7 @@ export default function LoginRegisterForm() {
                       onClick={toggleRegisterPasswordVisibility}
                       aria-label={showRegisterPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
-                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      {showRegisterPassword ? "🙈" : "👁️"}
                     </button>
                   </div>
 
@@ -518,7 +523,7 @@ export default function LoginRegisterForm() {
                       onClick={toggleConfirmPasswordVisibility}
                       aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
-                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      {showConfirmPassword ? "🙈" : "👁️"}
                     </button>
                   </div>
 
