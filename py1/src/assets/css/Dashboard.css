@@ -1,0 +1,166 @@
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  height: 100%;
+  overflow-x: hidden;
+  background: var(--c-background);
+  color: var(--c-text-secondary);
+  font-family: var(--font-family);
+}
+
+/* Layout general */
+.dashboard {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  color: var(--c-text-accent);
+}
+
+.dashboard-header p {
+  font-size: 1.4rem;
+  color: var(--c-muted);
+}
+
+/* Secciones */
+.dashboard-section {
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-section h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: var(--c-secondary);
+}
+
+/* Listas */
+.accounts-list,
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.accounts-item,
+.cards-item {
+  list-style: none;
+}
+
+/* Cards base */
+/* Estilos para carrusel */
+.cards-carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+  scrollbar-width: thin;
+}
+
+.card-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.card-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.3rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.card-btn.primary {
+  background: var(--c-primary);
+  color: white;
+}
+
+.card-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--c-border);
+  color: var(--c-text-secondary);
+}
+
+
+
+/* Botones */
+.account-card-details-btn,
+.transfers-new-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: var(--bg-gradient);
+  color: var(--c-text);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.account-card-details-btn:hover,
+.transfers-new-btn:hover {
+  background: var(--bg-gradient-light);
+}
+
+/* Transferencias */
+.transfers-description {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--c-muted);
+}
+
+/* --- Responsivo --- */
+
+/* Tablet */
+@media (min-width: 600px) {
+  .accounts-list,
+  .cards-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Desktop */
+@media (min-width: 900px) {
+  .accounts-list,
+  .cards-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .dashboard-header h1 {
+    font-size: 2.4rem;
+  }
+
+  .dashboard-header p {
+    font-size: 1.6rem;
+  }
+}
