@@ -66,10 +66,16 @@ export default function LoginRegisterForm() {
   //Validacion para acceder.
   const handleAcceder = () => {
 
+    if (!testUser) {
+      alert("Error al cargar los datos del usuario.");
+      return;
+    }
+
     // TESTING PURPOSES
     window.location.href = "/dashboard";
     return;
 
+    /*
     console.log("Datos de inicio de sesión:", loginData);
     const { username, password } = loginData;
     
@@ -95,6 +101,7 @@ export default function LoginRegisterForm() {
     } else {
       alert("Credenciales incorrectas");
     }
+    */
   };
 
   // Manejo de términos y condiciones
