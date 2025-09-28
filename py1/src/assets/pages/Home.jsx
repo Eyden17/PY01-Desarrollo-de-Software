@@ -2,7 +2,7 @@ import { useState } from "react";
 import "../css/home.css";
 import logo from "../img/logo_example.png";
 import Footer from "../components/Footer";
-import modalContent from "../js/home.js";
+import modalContent from "../../data/home.js";
 import LoginRegisterForm from "./Login.jsx";
 
 

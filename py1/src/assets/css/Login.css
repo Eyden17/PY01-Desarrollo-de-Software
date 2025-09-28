@@ -95,6 +95,13 @@
   gap: 1.5rem;
 }
 
+/* Contenedor para input con botón de mostrar/ocultar contraseña */
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 /* Estilos de los inputs y tamano fuente*/
 .form-input {
   width: 100%;
@@ -108,6 +115,11 @@
   transition: all 0.3s ease;
 }
 
+/* Input de contraseña con espacio para el botón */
+.form-input.password-input {
+  padding-right: 3rem;
+}
+
 .form-input::placeholder {
   color: #6b7280;
 }
@@ -115,6 +127,33 @@
 .form-input:focus {
   background: white;
   box-shadow: 0 0 0 2px #dc2626;
+}
+
+/* Botón para mostrar/ocultar contraseña */
+.password-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  font-size: 1.1rem;
+}
+
+.password-toggle-btn:hover {
+  color: #374151;
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+  color: #dc2626;
 }
 
 /*Estilos para los botones de Acceder*/
@@ -391,6 +430,14 @@
   padding: 0.875rem;
 }
 
+.form-input.password-input {
+  padding-right: 2.5rem;
+}
+
+.password-toggle-btn {
+  font-size: 1rem;
+}
+
 .prefix {
   padding: 0.875rem;
   font-size: 1rem;
@@ -469,15 +516,24 @@
     padding: 1rem;
   }
   
+  .form-input.password-input {
+    padding-right: 3rem;
+  }
+  
+  .password-toggle-btn {
+    font-size: 1.1rem;
+  }
+  
   .prefix {
     padding: 1rem;
     font-size: 1.2rem;
   }
 
-    .checkbox-text {
-  font-size: 1.2rem;
-}
+  .checkbox-text {
+    font-size: 1.2rem;
   }
+}
+
 /* Estilos para la sección de términos y condiciones */
 .terms-row {
   margin: 20px 0;

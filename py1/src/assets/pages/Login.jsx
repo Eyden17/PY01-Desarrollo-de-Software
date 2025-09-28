@@ -2,12 +2,20 @@ import { useState, useEffect } from "react";
 import "../css/Login.css";
 import PasswordRecovery from "./PasswordRecovery.jsx";
 import TermsAndConditionsModal from "./TermsAndConditionsModal.jsx";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 export default function LoginRegisterForm() {
   const [showLogin, setShowLogin] = useState(true);
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  
+  // Estados para mostrar/ocultar contraseñas
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [registerData, setRegisterData] = useState({
     identificacion: "",
@@ -41,6 +49,19 @@ export default function LoginRegisterForm() {
 
     loadTestUser();
   }, []);
+
+  // Funciones para mostrar/ocultar contraseñas
+  const toggleLoginPasswordVisibility = () => {
+    setShowLoginPassword(!showLoginPassword);
+  };
+
+  const toggleRegisterPasswordVisibility = () => {
+    setShowRegisterPassword(!showRegisterPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   //Validacion para acceder.
   const handleAcceder = () => {
@@ -198,6 +219,10 @@ export default function LoginRegisterForm() {
     // Reset términos y condiciones
     setTermsAccepted(false);
 
+    // Reset estados de visibilidad de contraseña
+    setShowRegisterPassword(false);
+    setShowConfirmPassword(false);
+
     // Pasar a login automáticamente
     toggleToLogin();
   };
@@ -214,6 +239,9 @@ export default function LoginRegisterForm() {
     setShowLogin(true);
     // Reset términos cuando regresa al login
     setTermsAccepted(false);
+    // Reset estados de visibilidad de contraseña
+    setShowRegisterPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const handleOpenPasswordRecovery = () => {
@@ -227,6 +255,7 @@ export default function LoginRegisterForm() {
   const handlePasswordRecoverySuccess = () => {
     // limpia el formulario de login o mostrar mensaje
     setLoginData({ username: "", password: "" });
+    setShowLoginPassword(false);
   };
 
   return (
@@ -254,11 +283,11 @@ export default function LoginRegisterForm() {
                       />
                     </div>
 
-                    <div>
+                    <div className="password-input-container">
                       <input
-                        type="password"
+                        type={showLoginPassword ? "text" : "password"}
                         placeholder="Contraseña"
-                        className="form-input"
+                        className="form-input password-input"
                         value={loginData.password}
                         onChange={(e) =>
                           setLoginData({
@@ -267,6 +296,14 @@ export default function LoginRegisterForm() {
                           })
                         }
                       />
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={toggleLoginPasswordVisibility}
+                        aria-label={showConfirmPassword  ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                         {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
                     </div>
 
                     <button onClick={handleAcceder} className="form-button">
@@ -437,11 +474,12 @@ export default function LoginRegisterForm() {
                     </div>
                   </div>
 
-                  <div className="input-row">
+                  {/* Contraseña con botón mostrar/ocultar */}
+                  <div className="password-input-container">
                     <input
-                      type="password"
+                      type={showRegisterPassword ? "text" : "password"}
                       placeholder="Contraseña"
-                      className="form-input"
+                      className="form-input password-input"
                       value={registerData.password}
                       onChange={(e) =>
                         setRegisterData({
@@ -450,13 +488,22 @@ export default function LoginRegisterForm() {
                         })
                       }
                     />
+                    <button
+                      type="button"
+                      className="password-toggle-btn"
+                      onClick={toggleRegisterPasswordVisibility}
+                      aria-label={showRegisterPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                      {showRegisterPassword ? "🙈" : "👁️"}
+                    </button>
                   </div>
 
-                  <div className="input-row">
+                  {/* Confirmar contraseña con botón mostrar/ocultar */}
+                  <div className="password-input-container">
                     <input
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirmar Contraseña"
-                      className="form-input"
+                      className="form-input password-input"
                       value={registerData.confirmPassword}
                       onChange={(e) =>
                         setRegisterData({
@@ -465,6 +512,14 @@ export default function LoginRegisterForm() {
                         })
                       }
                     />
+                    <button
+                      type="button"
+                      className="password-toggle-btn"
+                      onClick={toggleConfirmPasswordVisibility}
+                      aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                      {showConfirmPassword ? "🙈" : "👁️"}
+                    </button>
                   </div>
 
                   <div className="terms-row">
