@@ -1,11 +1,19 @@
 import './App.css';
-import Home from './assets/pages/Home.jsx'; // importa  componente Home
+import { Routes, Route, BrowserRouter } from 'react-router-dom'
+
+import Home from './assets/pages/Home.jsx';
+import Dashboard from './assets/pages/Dashboard.jsx';
 
 function App() {
   return (
-    <div className="App">
-      <Home />  {/* carga tu Home.jsx */}
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
