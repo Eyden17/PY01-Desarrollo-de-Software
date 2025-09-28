@@ -494,7 +494,7 @@ export default function LoginRegisterForm() {
                       onClick={toggleRegisterPasswordVisibility}
                       aria-label={showRegisterPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
-                      {showRegisterPassword ? "🙈" : "👁️"}
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
                   </div>
 
@@ -518,7 +518,7 @@ export default function LoginRegisterForm() {
                       onClick={toggleConfirmPasswordVisibility}
                       aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
-                      {showConfirmPassword ? "🙈" : "👁️"}
+                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
                   </div>
 
