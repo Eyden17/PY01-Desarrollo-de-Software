@@ -1,26 +1,53 @@
-
-html {
-  box-sizing: border-box;
-  font-size: 62.5%;
-  /* HACK: 1rem = 10px */
-}
-
-html, body {
-  height: 100%;
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden; /* Evita scroll horizontal */
-}
-
 *,
 *:before,
 *:after {
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+
+  font-family: 'Inter', sans-serif;
+  line-height: 2;
+  font-weight: 400;
+
+
+  --c-primary: #dc2626;
+  --c-secondary: #991b1b;
+  --c-accent: #ef4444;
+  --c-background: #f9f9f9;
+
+  --bg-gradient: linear-gradient(135deg, #dc2626, #991b1b);
+  --bg-gradient-light: linear-gradient(135deg, #ef4444, #dc2626);
+
+
+  --c-text: #fff;
+  --c-text-secondary: #374151;
+  --c-text-accent: #dc2626;
+  --c-border: #c7c7c7;
+  --c-muted: #666666;
+
+  --shadow-dark: #0000001a;
+  --shadow-light: #b7c3cf3b;
+
+  --font-family: 'Inter', sans-serif;
+  --font-size-base: 10px;
+	--line-height-base: 1.6;
+}
+
+html {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  scroll-behavior: smooth;
+
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  height: 100%;
+  overflow-x: hidden;
+
   /* 16px */
-  font-size: 1.6rem;
   /*line-height es el espacio entre lineas*/
   line-height: 2;  
   margin: 0;
