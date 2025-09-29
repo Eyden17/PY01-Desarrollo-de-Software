@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../css/modal.css";
 import transactionsData from "../../data/transactions.json";
+import PinModal from "./PinModal";
 
 export default function CardDetailModal({ card, onClose }) {
   const [transactions, setTransactions] = useState([]);
@@ -9,6 +10,7 @@ export default function CardDetailModal({ card, onClose }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("loading");
   const [expandedId, setExpandedId] = useState(null);
+  const [showPinModal, setShowPinModal] = useState(false);
 
   useEffect(() => {
     setStatus("loading");
@@ -127,6 +129,10 @@ export default function CardDetailModal({ card, onClose }) {
               </div>
           ))}
         </div>
+
+        <button onClick={() => setShowPinModal(true)}>Consultar PIN</button>
+        {showPinModal && <PinModal card={card} onClose={() => setShowPinModal(false)} />}
+
       </div>
     </div>
   );

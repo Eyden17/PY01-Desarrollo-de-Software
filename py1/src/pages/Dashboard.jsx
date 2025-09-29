@@ -37,6 +37,8 @@ const mockUserData = {
       id: "card-1",
       type: "Gold",
       number: "4532 1488 5398 7654",
+      pin: 2345,
+      cvv: 123,
       exp: "08/28",
       holder: "JUAN PEREZ",
       vendor: "MC"
@@ -45,6 +47,8 @@ const mockUserData = {
       id: "card-2",
       type: "Platinum", 
       number: "5523 4491 2034 9876",
+      pin: 6789,
+      cvv: 456,
       exp: "12/29",
       holder: "JUAN PEREZ",
       vendor: "MC"
@@ -52,7 +56,9 @@ const mockUserData = {
     {
       id: "card-3",
       type: "Black",
-      number: "3782 822463 10005",
+      number: "3782 8223 4463 1005",
+      pin: 1234,
+      cvv: 789,
       exp: "05/30",
       holder: "JUAN PEREZ", 
       vendor: "MC"
@@ -203,6 +209,7 @@ const Dashboard = () => {
                       type={card.type}
                       number={card.number}
                       exp={card.exp}
+                      pin={card.pin}
                       holder={card.holder}
                       vendor={card.vendor}
                     />
