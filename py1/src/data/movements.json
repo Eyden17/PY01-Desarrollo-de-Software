@@ -1,0 +1,29 @@
+[
+  {
+    "id": "txn-1",
+    "account_id": "CR01-0001-0002-123456789012",
+    "date": "2025-09-20T10:30:00Z",
+    "type": "CREDITO",
+    "description": "Depósito nómina",
+    "currency": "CRC",
+    "balance": 500000.0
+  },
+  {
+    "id": "txn-2",
+    "account_id": "CR01-0001-0002-123456789012",
+    "date": "2025-09-22T12:00:00Z",
+    "type": "DEBITO",
+    "description": "Pago servicios",
+    "currency": "CRC",
+    "balance": -35000.0
+  },
+  {
+    "id": "txn-3",
+    "account_id": "CR01-0001-0002-123456789012",
+    "date": "2025-09-25T18:45:00Z",
+    "type": "DEBITO",
+    "description": "Compra supermercado",
+    "currency": "CRC",
+    "balance": -120000.0
+  }
+]

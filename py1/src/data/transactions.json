@@ -1,0 +1,29 @@
+[
+  {
+    "id": "tx1",
+    "card_id": "card-1",
+    "fecha": "2025-09-28T14:20:00Z",
+    "tipo": "COMPRA",
+    "descripcion": "Pago supermercado",
+    "moneda": "CRC",
+    "saldo": 20000.5
+  },
+  {
+    "id": "tx2",
+    "card_id": "card-1",
+    "fecha": "2025-09-27T10:15:00Z",
+    "tipo": "PAGO",
+    "descripcion": "Depósito nómina",
+    "moneda": "CRC",
+    "saldo": 500000
+  },
+  {
+    "id": "tx3",
+    "card_id": "card-2",
+    "fecha": "2025-09-26T09:00:00Z",
+    "tipo": "COMPRA",
+    "descripcion": "Compra online",
+    "moneda": "USD",
+    "saldo": 120.75
+  }
+]
