@@ -37,9 +37,9 @@ export default function PinModal({ card, onClose }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <header className="modal-header">
+    <div className="pin-modal-overlay" onClick={onClose}>
+      <div className="pin-modal-content" onClick={(e) => e.stopPropagation()}>
+        <header className="modal-header" id="modal-title">
           <h2>Consultar PIN</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
         </header>
