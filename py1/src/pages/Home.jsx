@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../assets/css/Home.css";
+import "../assets/css/home.css";
 import logo from "../assets/img/logo.svg";
 import Footer from "../assets/components/Footer";
 import modalContent from "../data/home.js";

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import "../assets/css/Login.css";
+import { useNavigate } from "react-router-dom";
 import PasswordRecovery from "./PasswordRecovery.jsx";
 import TermsAndConditionsModal from "./TermsAndConditionsModal.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 
 export default function LoginRegisterForm() {
+  const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(true);
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -72,8 +74,9 @@ export default function LoginRegisterForm() {
     }
 
     // TESTING PURPOSES
-    window.location.href = "/dashboard";
+    navigate("/dashboard");
     return;
+
 
     /*
     console.log("Datos de inicio de sesión:", loginData);
