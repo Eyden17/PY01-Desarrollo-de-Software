@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/css/Dashboard.css';
 import CreditCard from '../assets/components/CreditCard';
+import Transfers from './Transfer.jsx';
 
 const formatCurrency = (amount, currency) => {
   const formattedAmount = amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -62,6 +63,17 @@ const Dashboard = () => {
   const { name, accounts, creditCards } = mockUserData;
   
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [showTransfers, setShowTransfers] = useState(false);
+
+  // Transforma las cuentas al formato que espera el componente Transfers
+  const userAccountsForTransfer = accounts.map(account => ({
+    id: account.account_id,
+    name: account.alias,
+    number: account.account_id,
+    currency: account.currency,
+    balance: account.balance,
+    type: account.type
+  }));
 
   const handleNextCard = () => {
     const carousel = document.querySelector('.cards-carousel');
@@ -106,6 +118,7 @@ const Dashboard = () => {
   }, []);
 
   return (
+    <>
       <main className="dashboard">
 
         {/* Encabezado */}
@@ -216,11 +229,21 @@ const Dashboard = () => {
           <button
             type="button"
             className="transfers-new-btn"
+            onClick={() => setShowTransfers(true)}
           >
             Nueva transferencia
           </button>
         </section>
       </main>
+
+      {/* Modal de Transferencias */}
+      {showTransfers && (
+        <Transfers 
+          userAccounts={userAccountsForTransfer}
+          onClose={() => setShowTransfers(false)}
+        />
+      )}
+    </>
   );
 };
 
