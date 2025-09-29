@@ -17,6 +17,8 @@
   --c-secondary: #991b1b;
   --c-accent: #ef4444;
   --c-background: #f9f9f9;
+  --c-surface: #ffffff;
+  --c-surface-hover: #f1f5f9;
 
   --bg-gradient: linear-gradient(135deg, #dc2626, #991b1b);
   --bg-gradient-light: linear-gradient(135deg, #ef4444, #dc2626);

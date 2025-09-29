@@ -65,6 +65,17 @@ export default function LoginRegisterForm() {
 
   //Validacion para acceder.
   const handleAcceder = () => {
+
+    if (!testUser) {
+      alert("Error al cargar los datos del usuario.");
+      return;
+    }
+
+    // TESTING PURPOSES
+    window.location.href = "/dashboard";
+    return;
+
+    /*
     console.log("Datos de inicio de sesión:", loginData);
     const { username, password } = loginData;
     
@@ -90,6 +101,7 @@ export default function LoginRegisterForm() {
     } else {
       alert("Credenciales incorrectas");
     }
+    */
   };
 
   // Manejo de términos y condiciones
@@ -494,7 +506,7 @@ export default function LoginRegisterForm() {
                       onClick={toggleRegisterPasswordVisibility}
                       aria-label={showRegisterPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
-                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      {showRegisterPassword ? "🙈" : "👁️"}
                     </button>
                   </div>
 
@@ -518,7 +530,7 @@ export default function LoginRegisterForm() {
                       onClick={toggleConfirmPasswordVisibility}
                       aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
-                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                      {showConfirmPassword ? "🙈" : "👁️"}
                     </button>
                   </div>
 
