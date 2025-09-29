@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import "../css/PasswordRecovery.css";
+import "../assets/css/PasswordRecovery.css";
 
 export default function PasswordRecovery({ onClose, onSuccess }) {
   const [step, setStep] = useState(1); // 1: método, 2: código, 3: nueva contraseña, 4: confirmación

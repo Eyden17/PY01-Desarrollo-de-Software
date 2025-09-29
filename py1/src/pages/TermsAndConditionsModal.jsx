@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../css/TermsAndConditionsModal.css";
+import "../assets/css/TermsAndConditionsModal.css";
 
 export default function TermsAndConditionsModal({ isOpen, onClose, onAccept }) {
   const [hasAccepted, setHasAccepted] = useState(false);

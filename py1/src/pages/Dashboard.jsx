@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import '../css/Dashboard.css';
-import CreditCard from '../components/CreditCard';
+import '../assets/css/Dashboard.css';
+import CreditCard from '../assets/components/CreditCard';
 
 const formatCurrency = (amount, currency) => {
   const formattedAmount = amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');

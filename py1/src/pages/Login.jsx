@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../css/Login.css";
+import "../assets/css/Login.css";
 import PasswordRecovery from "./PasswordRecovery.jsx";
 import TermsAndConditionsModal from "./TermsAndConditionsModal.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
