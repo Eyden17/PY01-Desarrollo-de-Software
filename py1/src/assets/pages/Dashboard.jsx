@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Dashboard.css';
 import CreditCard from '../components/CreditCard';
+
+const formatCurrency = (amount, currency) => {
+  const formattedAmount = amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  
+  if (currency === "CRC") {
+    return `₡${formattedAmount}`;
+  } else {
+    return `$${formattedAmount}`;
+  }
+};
 
 const mockUserData = {
   name: "Juan Pérez",
@@ -27,7 +37,7 @@ const mockUserData = {
       number: "4532 1488 5398 7654",
       exp: "08/28",
       holder: "JUAN PEREZ",
-      vendor: "VISA"
+      vendor: "MC"
     },
     {
       id: "card-2",
@@ -43,13 +53,57 @@ const mockUserData = {
       number: "3782 822463 10005",
       exp: "05/30",
       holder: "JUAN PEREZ", 
-      vendor: "AMEX"
+      vendor: "MC"
     }
   ],
 };
 
 const Dashboard = () => {
   const { name, accounts, creditCards } = mockUserData;
+  
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+
+  const handleNextCard = () => {
+    const carousel = document.querySelector('.cards-carousel');
+    const cardWidth = 300 + 32;
+    if (carousel) {
+      carousel.scrollBy({ left: cardWidth, behavior: 'smooth' });
+      setCurrentCardIndex(prev => Math.min(prev + 1, creditCards.length - 1));
+    }
+  };
+
+  const handlePrevCard = () => {
+    const carousel = document.querySelector('.cards-carousel');
+    const cardWidth = 300 + 32;
+    if (carousel) {
+      carousel.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+      setCurrentCardIndex(prev => Math.max(prev - 1, 0));
+    }
+  };
+
+  const handleIndicatorClick = (index) => {
+    const carousel = document.querySelector('.cards-carousel');
+    const cardWidth = 300 + 32;
+    if (carousel) {
+      carousel.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+      setCurrentCardIndex(index);
+    }
+  };
+
+  useEffect(() => {
+    const carousel = document.querySelector('.cards-carousel');
+    if (!carousel) return;
+
+    const handleScroll = () => {
+      const scrollLeft = carousel.scrollLeft;
+      const cardWidth = 300 + 32;
+      const newIndex = Math.round(scrollLeft / cardWidth);
+      setCurrentCardIndex(newIndex);
+    };
+
+    carousel.addEventListener('scroll', handleScroll);
+    return () => carousel.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
       <main className="dashboard">
@@ -57,35 +111,30 @@ const Dashboard = () => {
         {/* Encabezado */}
         <header className="dashboard-header">
           <h1>Dashboard</h1>
-          <p className>Bienvenido, {name}</p>
         </header>
 
         {/* Sección de Cuentas */}
         <section className="dashboard-section accounts" aria-labelledby="cuentas-heading">
-          <h2 id="cuentas-heading">Cuentas</h2>
+          <h2 id="cuentas-heading" className="section-title">Cuentas</h2>
           <ul className="accounts-list">
             {accounts.map((account) => (
               <li key={account.account_id} className="accounts-item">
                 <article className="account-card">
-                  <h3 className="account-card-alias">{account.alias}</h3>
-                  <p className="account-card-number">
-                    <strong>Número:</strong> {account.account_id}
+                  <p className="account-balance">
+                    {formatCurrency(account.balance, account.currency)}
                   </p>
-                  <p className="account-card-currency">
-                    <strong>Moneda:</strong> {account.currency}
-                  </p>
-                  <p className="account-card-balance">
-                    <strong>Saldo:</strong>{" "}
-                    {account.currency === "CRC"
-                      ? `₡${account.balance.toFixed(2)}`
-                      : `$${account.balance.toFixed(2)}`}
-                  </p>
-                  <button
-                    type="button"
-                    className="account-card-details-btn"
-                  >
-                    Ver detalles
-                  </button>
+                  <div className="account-field">
+                    <span className="account-label">Alias</span>
+                    <span className="account-value">{account.alias}</span>
+                  </div>
+                  <div className="account-field">
+                    <span className="account-label">Número</span>
+                    <span className="account-value">{account.account_id}</span>
+                  </div>
+                  <div className="account-field">
+                    <span className="account-label">Titular</span>
+                    <span className="account-value">{name}</span>
+                  </div>
                 </article>
               </li>
             ))}
@@ -94,23 +143,63 @@ const Dashboard = () => {
 
         {/* Sección de Tarjetas */}
         <section className="dashboard-section cards" aria-labelledby="cards-heading">
-          <h2 id="cards-heading" className="section-title">
-            Mis Tarjetas
-          </h2>
+          <h2 id="cards-heading" className="section-title">Mis Tarjetas</h2>
 
-          <ul className="cards-carousel">
-            {creditCards.map((card) => (
-              <li key={card.id} className="card-item">
-                <CreditCard
-                  type={card.type}
-                  number={card.number}
-                  exp={card.exp}
-                  holder={card.holder}
-                  vendor={card.vendor}
-                />
-              </li>
+          <div className="cards-carousel-container">
+            {/* Flecha izquierda */}
+            <button
+              type="button"
+              className="carousel-arrow carousel-arrow--left"
+              onClick={handlePrevCard}
+              aria-label="Tarjeta anterior"
+              disabled={currentCardIndex === 0}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            <div className="cards-carousel-wrapper">
+              <ul className="cards-carousel">
+                {creditCards.map((card) => (
+                  <li key={card.id} className="card-item">
+                    <CreditCard
+                      type={card.type}
+                      number={card.number}
+                      exp={card.exp}
+                      holder={card.holder}
+                      vendor={card.vendor}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Flecha derecha */}
+            <button
+              type="button"
+              className="carousel-arrow carousel-arrow--right"
+              onClick={handleNextCard}
+              aria-label="Siguiente tarjeta"
+              disabled={currentCardIndex === creditCards.length - 1}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Indicadores de posición */}
+          <div className="carousel-indicators">
+            {creditCards.map((_, index) => (
+              <button
+                key={index}
+                className={`carousel-indicator ${currentCardIndex === index ? 'active' : ''}`}
+                onClick={() => handleIndicatorClick(index)}
+                aria-label={`Ir a tarjeta ${index + 1}`}
+              />
             ))}
-          </ul>
+          </div>
         </section>
 
         {/* Sección de Transferencias */}

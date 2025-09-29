@@ -22,25 +22,33 @@ body {
 
 /* Layout general */
 .dashboard {
-  padding: 1.5rem;
+  margin: 0 auto;
+}
+
+.dashboard-header ~ section {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 /* Header */
 .dashboard-header {
   text-align: center;
   margin-bottom: 2rem;
+  padding: 1rem 1rem;
+  background: var(--c-primary);
+  color: var(--c-text);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .dashboard-header h1 {
   font-size: 2rem;
-  color: var(--c-text-accent);
+  margin-bottom: 0.5rem;
 }
 
 .dashboard-header p {
   font-size: 1.4rem;
-  color: var(--c-muted);
+  opacity: 0.9;
 }
 
 /* Secciones */
@@ -67,55 +75,237 @@ body {
   list-style: none;
 }
 
-/* Cards base */
-/* Estilos para carrusel */
-.cards-carousel {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  padding: 1rem 0;
-  scrollbar-width: thin;
-}
-
-.card-item {
-  flex: 0 0 auto;
+/* Cuentas */
+.account-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.card-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.card-btn {
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 0.3rem;
-  font-size: 0.8rem;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  background: var(--c-surface);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, background 0.3s ease, border-left 0.3s ease;
   cursor: pointer;
+  border-left: 4px solid var(--c-primary);
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  position: relative;
+  overflow: hidden;
 }
 
-.card-btn.primary {
-  background: var(--c-primary);
-  color: white;
+.account-card:hover {
+  transform: translateY(-3px);
+  background: var(--c-surface-hover);
+  border-left: 4px solid var(--c-accent);
 }
 
-.card-btn.secondary {
-  background: transparent;
-  border: 1px solid var(--c-border);
+/* Flecha indicadora */
+.account-card::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.account-card:hover::after {
+  transform: translateY(-50%) translateX(3px);
+  opacity: 1;
+}
+
+.account-card-content {
+  padding-right: 2rem;
+}
+
+/* Saldo */
+.account-balance {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--c-primary);
+  margin-bottom: 1.2rem;
+}
+
+.account-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.8rem;
+}
+
+.account-label {
+  font-size: 0.9rem;
+  color: var(--c-text-accent);
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+  letter-spacing: 0.5px;
+}
+
+.account-value {
+  font-size: 1.2rem;
+  font-weight: 600;
   color: var(--c-text-secondary);
 }
 
+/* Tarjetas - carrusel */
+.cards-carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 100%;
+  padding: 0 3rem;
+}
 
+.cards-carousel-wrapper {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
 
-/* Botones */
-.account-card-details-btn,
+.cards-carousel {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  scroll-behavior: smooth;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cards-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cada tarjeta en el carrusel */
+.card-item {
+  flex: 0 0 auto;
+  width: 300px;
+  scroll-snap-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Flechas del carrusel */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--c-surface);
+  border: 2px solid var(--c-border);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--c-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.carousel-arrow:hover {
+  background: var(--c-primary);
+  color: white;
+  border-color: var(--c-primary);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-arrow:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.carousel-arrow--left {
+  left: 0;
+}
+
+.carousel-arrow--right {
+  right: 0;
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: translateY(-50%);
+}
+
+.carousel-arrow:disabled:hover {
+  background: var(--c-surface);
+  color: var(--c-primary);
+  border-color: var(--c-border);
+  transform: translateY(-50%);
+}
+
+/* Indicadores de posición */
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.carousel-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--c-border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.carousel-indicator.active {
+  background: var(--c-primary);
+  transform: scale(1.2);
+}
+
+.carousel-indicator:hover {
+  background: var(--c-primary);
+  transform: scale(1.1);
+}
+
+.cards-carousel-wrapper::before,
+.cards-carousel-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cards-carousel-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--c-background), transparent);
+}
+
+.cards-carousel-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--c-background), transparent);
+}
+
+/* Transferencias */
+.transfers-description {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--c-muted);
+}
+
 .transfers-new-btn {
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
+  width: 100%;
+  padding: 0.8rem;
   font-size: 1.2rem;
   border: none;
   border-radius: 0.6rem;
@@ -125,16 +315,8 @@ body {
   transition: background 0.3s ease;
 }
 
-.account-card-details-btn:hover,
 .transfers-new-btn:hover {
   background: var(--bg-gradient-light);
-}
-
-/* Transferencias */
-.transfers-description {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: var(--c-muted);
 }
 
 /* --- Responsivo --- */
