@@ -73,12 +73,6 @@ export default function LoginRegisterForm() {
       return;
     }
 
-    // TESTING PURPOSES
-    navigate("/dashboard");
-    return;
-
-
-    /*
     console.log("Datos de inicio de sesión:", loginData);
     const { username, password } = loginData;
     
@@ -97,14 +91,12 @@ export default function LoginRegisterForm() {
       // Reinicia los valores del iniciar sesion
       setLoginData({ username: "", password: "" });
       
-      //EYDEN aqui va la redireccion al modulo del banco
-      
+      navigate('/dashboard');      
       console.log("Redirigiendo al módulo del banco...");
       
     } else {
       alert("Credenciales incorrectas");
     }
-    */
   };
 
   // Manejo de términos y condiciones
