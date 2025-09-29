@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/css/Dashboard.css';
 import CreditCard from '../assets/components/CreditCard';
+import AccountModal from "../assets/components/AccountModal";
+import CardDetailModal from "../assets/components/CardDetailModal";
 
 const formatCurrency = (amount, currency) => {
   const formattedAmount = amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -60,7 +62,9 @@ const mockUserData = {
 
 const Dashboard = () => {
   const { name, accounts, creditCards } = mockUserData;
-  
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [selectedCard, setSelectedCard] = useState(null);
+
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   const handleNextCard = () => {
@@ -88,6 +92,10 @@ const Dashboard = () => {
       carousel.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
       setCurrentCardIndex(index);
     }
+  };
+
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
   };
 
   useEffect(() => {
@@ -119,7 +127,10 @@ const Dashboard = () => {
           <ul className="accounts-list">
             {accounts.map((account) => (
               <li key={account.account_id} className="accounts-item">
-                <article className="account-card">
+                <article
+                  className="account-card"
+                  onClick={() => setSelectedAccount(account)}
+                >
                   <p className="account-balance">
                     {formatCurrency(account.balance, account.currency)}
                   </p>
@@ -141,9 +152,18 @@ const Dashboard = () => {
           </ul>
         </section>
 
+        {selectedAccount && (
+          <AccountModal
+            account={selectedAccount}
+            onClose={() => setSelectedAccount(null)}
+          />
+        )}
+
         {/* Sección de Tarjetas */}
         <section className="dashboard-section cards" aria-labelledby="cards-heading">
-          <h2 id="cards-heading" className="section-title">Mis Tarjetas</h2>
+          <h2 id="cards-heading" className="section-title">
+            Mis Tarjetas
+          </h2>
 
           <div className="cards-carousel-container">
             {/* Flecha izquierda */}
@@ -154,15 +174,31 @@ const Dashboard = () => {
               aria-label="Tarjeta anterior"
               disabled={currentCardIndex === 0}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 18L9 12L15 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
 
             <div className="cards-carousel-wrapper">
               <ul className="cards-carousel">
                 {creditCards.map((card) => (
-                  <li key={card.id} className="card-item">
+                  <li
+                    key={card.id}
+                    className="card-item"
+                    onClick={() => handleCardClick(card)}
+                  >
                     <CreditCard
                       type={card.type}
                       number={card.number}
@@ -183,8 +219,20 @@ const Dashboard = () => {
               aria-label="Siguiente tarjeta"
               disabled={currentCardIndex === creditCards.length - 1}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 18L15 12L9 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>
@@ -194,12 +242,22 @@ const Dashboard = () => {
             {creditCards.map((_, index) => (
               <button
                 key={index}
-                className={`carousel-indicator ${currentCardIndex === index ? 'active' : ''}`}
+                className={`carousel-indicator ${
+                  currentCardIndex === index ? "active" : ""
+                }`}
                 onClick={() => handleIndicatorClick(index)}
                 aria-label={`Ir a tarjeta ${index + 1}`}
               />
             ))}
           </div>
+
+          {/* Modal */}
+          {selectedCard && (
+            <CardDetailModal
+              card={selectedCard}
+              onClose={() => setSelectedCard(null)}
+            />
+          )}
         </section>
 
         {/* Sección de Transferencias */}
