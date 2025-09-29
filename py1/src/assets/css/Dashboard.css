@@ -93,6 +93,11 @@ body {
   overflow: hidden;
 }
 
+.account-card .account-label {
+  margin-bottom: -0.5rem;
+  letter-spacing: 0.5px;
+}
+
 .account-card:hover {
   transform: translateY(-3px);
   background: var(--c-surface-hover);
@@ -296,6 +301,10 @@ body {
   background: linear-gradient(to left, var(--c-background), transparent);
 }
 
+.dashboard-section.transfers {
+  padding-bottom: 2.5rem;
+}
+
 /* Transferencias */
 .transfers-description {
   font-size: 1.2rem;
@@ -327,7 +336,7 @@ body {
   .cards-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    gap: 1rem;
   }
 }
 
@@ -344,5 +353,97 @@ body {
 
   .dashboard-header p {
     font-size: 1.6rem;
+  }
+}
+
+/* Tablet (2 columnas) */
+@media (min-width: 600px) {
+  .dashboard {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    grid-template-areas:
+      "header header"
+      "accounts transfers"
+      "cards cards";
+    gap: 2rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .dashboard-header { 
+    grid-area: header; 
+    padding: 0;
+    margin: 0 -2rem;
+  }
+  
+  .dashboard-section.accounts { 
+    grid-area: accounts; 
+    width: 100%;
+    padding-right: 2rem;
+  }
+  
+  .dashboard-section.transfers { 
+    grid-area: transfers;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid var(--c-border);
+    height: 100%;
+    margin-left: 1rem;
+  }
+  
+  .dashboard-section.cards { 
+    grid-area: cards; 
+    padding: 2rem 1rem;
+    width: 100%;
+  }
+}
+
+/* Desktop (3 columnas) */
+@media (min-width: 900px) {
+  .dashboard {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-areas:
+      "header header header"
+      "accounts accounts transfers"
+      "cards cards cards";
+    gap: 2.5rem;
+    padding: 0 3rem;
+  }
+
+  .dashboard-header { 
+    grid-area: header; 
+    padding: 0;
+    margin: 0 -3rem;
+    max-width: none;
+  }
+
+  .dashboard-section.accounts { 
+    grid-area: accounts; 
+    padding-right: 3rem;
+  }
+
+  .dashboard-section.transfers {
+    grid-area: transfers;
+    padding: 2.5rem 2rem;
+    margin-left: 1.5rem;
+    border-left: 1px solid var(--c-border);
+  }
+
+  .dashboard-section.cards { 
+    grid-area: cards; 
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  .dashboard-header h1 { 
+    font-size: 2.4rem; 
+    text-align: center;
+  }
+  
+  .dashboard-header p { 
+    font-size: 1.6rem; 
+    text-align: center;
   }
 }
