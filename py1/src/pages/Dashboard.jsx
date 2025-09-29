@@ -6,7 +6,6 @@ import CardDetailModal from "../assets/components/CardDetailModal";
 import Transfers from './Transfer.jsx';
 import userData from '../data/userData.json';
 import logo from "../assets/img/logo-white.svg";
-import { FaTachometerAlt } from "react-icons/fa";
 
 const formatCurrency = (amount, currency) => {
   const formattedAmount = amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
