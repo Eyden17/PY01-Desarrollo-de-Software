@@ -6,7 +6,18 @@ import PlatinumCard from "../img/plat_card.png";
 import BlackCard from "../img/black_card.png";
 
 const CreditCard = ({ type, number, exp, holder, vendor }) => {
-  const numberGroups = number.split(" ");
+  const numberGroups = String(number).trim().split(/\s+/);
+
+  const maskedGroups = numberGroups.map((grp, idx) => {
+    const isFirst = idx === 0;
+    const isLast = idx === numberGroups.length - 1;
+
+    if (isFirst || isLast) {
+      return grp;
+    }
+
+    return "•".repeat(grp.length);
+  });
 
   const cardBackground = {
     Gold: GoldCard,
@@ -52,8 +63,8 @@ const CreditCard = ({ type, number, exp, holder, vendor }) => {
 
         <div className="card-type">{type}</div>
 
-        <div className="card-number">
-          {numberGroups.map((group, index) => (
+        <div className="card-number" aria-hidden="true">
+          {maskedGroups.map((group, index) => (
             <span key={index} className="card-digit-group">
               {group}
             </span>
