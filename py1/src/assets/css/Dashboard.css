@@ -33,23 +33,48 @@ body {
 
 /* Header */
 .dashboard-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  padding: 1rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
   background: var(--c-primary);
   color: var(--c-text);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.dashboard-header h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+.header-left {
+  flex: 0 0 auto;
 }
 
-.dashboard-header p {
+.header-logo {
+  height: 40px;
+  padding-left: clamp(0.5rem, 1vw, 1.5rem);
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  text-align: center;
+}
+
+
+.header-center h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.header-center p {
   font-size: 1.4rem;
   opacity: 0.9;
+  margin: 0;
 }
+
+
+.header-right {
+  flex: 0 0 auto;
+}
+
 
 /* Secciones */
 .dashboard-section {

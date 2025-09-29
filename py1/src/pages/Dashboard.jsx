@@ -4,6 +4,9 @@ import CreditCard from '../assets/components/CreditCard';
 import AccountModal from "../assets/components/AccountModal";
 import CardDetailModal from "../assets/components/CardDetailModal";
 import Transfers from './Transfer.jsx';
+import userData from '../data/userData.json';
+import logo from "../assets/img/logo-white.svg";
+import { FaTachometerAlt } from "react-icons/fa";
 
 const formatCurrency = (amount, currency) => {
   const formattedAmount = amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -15,65 +18,13 @@ const formatCurrency = (amount, currency) => {
   }
 };
 
-const mockUserData = {
-  name: "Juan Pérez",
-  accounts: [
-    {
-      account_id: "CR01-0001-0002-123456789012",
-      alias: "Ahorros Principal",
-      type: "Ahorro",
-      currency: "CRC",
-      balance: 1523400.50,
-    },
-    {
-      account_id: "CR01-0001-0003-987654321098",
-      alias: "Cuenta Corriente",
-      type: "Corriente",
-      currency: "USD",
-      balance: 5230.00,
-    },
-  ],
-  creditCards: [
-    {
-      id: "card-1",
-      type: "Gold",
-      number: "4532 1488 5398 7654",
-      pin: 2345,
-      cvv: 123,
-      exp: "08/28",
-      holder: "JUAN PEREZ",
-      vendor: "MC"
-    },
-    {
-      id: "card-2",
-      type: "Platinum", 
-      number: "5523 4491 2034 9876",
-      pin: 6789,
-      cvv: 456,
-      exp: "12/29",
-      holder: "JUAN PEREZ",
-      vendor: "MC"
-    },
-    {
-      id: "card-3",
-      type: "Black",
-      number: "3782 8223 4463 1005",
-      pin: 1234,
-      cvv: 789,
-      exp: "05/30",
-      holder: "JUAN PEREZ", 
-      vendor: "MC"
-    }
-  ],
-};
-
 const Dashboard = () => {
-  const { name, accounts, creditCards } = mockUserData;
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
-
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showTransfers, setShowTransfers] = useState(false);
+
+  const { name, accounts, creditCards } = userData;
 
   // Transforma las cuentas al formato que espera el componente Transfers
   const userAccountsForTransfer = accounts.map(account => ({
@@ -84,6 +35,7 @@ const Dashboard = () => {
     balance: account.balance,
     type: account.type
   }));
+
 
   const handleNextCard = () => {
     const carousel = document.querySelector('.cards-carousel');
@@ -137,7 +89,14 @@ const Dashboard = () => {
 
         {/* Encabezado */}
         <header className="dashboard-header">
-          <h1>Dashboard</h1>
+          <div className="header-center">
+            <h1>
+              Dashboard
+            </h1>
+          </div>
+          <div className="header-left">
+            <img src={logo} alt="Logo" className="header-logo" />
+          </div>
         </header>
 
         {/* Sección de Cuentas */}
