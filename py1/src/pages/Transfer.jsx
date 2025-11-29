@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../assets/css/Transfers.css';
 
-const Transfers = ({ userAccounts = [], onClose }) => {
+const Transfers = ({ userAccounts = [] }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState('select'); // 'select', 'form', 'confirm', 'result'
   const [transferType, setTransferType] = useState(null); // 'own', 'third-party'
   const [formData, setFormData] = useState({
@@ -60,7 +62,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
 
-    // Auto-selecciona un moneda cuando se elige cuenta origen
+    // Auto-selecciona una moneda cuando se elige cuenta origen
     if (name === 'sourceAccount' && !formData.currency) {
       const account = userAccounts.find(acc => acc.id === value);
       if (account) {
@@ -137,7 +139,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
   };
 
   const handleDownloadReceipt = () => {
-    // Placeholder para descargar(py02) el comprobante
+    // Placeholder para descargar el comprobante
     alert('Función de descarga disponible próximamente');
   };
 
@@ -174,20 +176,20 @@ const Transfers = ({ userAccounts = [], onClose }) => {
   };
 
   return (
-    <div className="transfers-modal-overlay">
-      <div className="transfers-modal">
-        <div className="transfers-modal-header">
-          <h2>Transferencias</h2>
+    <div className="transfers-page">
+      <div className="transfers-container">
+        <div className="transfers-header">
           <button 
-            className="transfers-close-btn" 
-            onClick={onClose}
-            aria-label="Cerrar"
+            className="transfers-back-btn" 
+            onClick={() => navigate(-1)}
+            aria-label="Volver"
           >
-            ×
+            ← Volver
           </button>
+          <h1>Transferencias</h1>
         </div>
 
-        <div className="transfers-modal-body">
+        <div className="transfers-content">
           {/* Paso 1: Selección de tipo */}
           {step === 'select' && (
             <div className="transfers-type-selection">
@@ -197,7 +199,6 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                   className="transfer-type-card"
                   onClick={() => handleTransferTypeSelect('own')}
                 >
-                  
                   <h3>Cuentas Propias</h3>
                   <p>Transfiere entre tus propias cuentas</p>
                 </button>
@@ -219,7 +220,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
               <div className="transfer-type-badge">
                 {transferType === 'own' ? 'Cuentas Propias' : 'Terceros'}
               </div>
-                {/* Seleccione una cuenta origen*/}
+
               <div className="form-group">
                 <label htmlFor="sourceAccount">Cuenta Origen *</label>
                 <select
@@ -229,7 +230,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                   onChange={handleInputChange}
                   className={errors.sourceAccount ? 'error' : ''}
                 >
-                    <option value="" disabled hidden>Selecciona una cuenta</option>
+                  <option value="" disabled hidden>Selecciona una cuenta</option>
                   {userAccounts.map(account => (
                     <option key={account.id} value={account.id}>
                       {account.name} - {account.number} ({account.currency} {account.balance.toFixed(2)})
@@ -238,7 +239,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                 </select>
                 {errors.sourceAccount && <span className="error-message">{errors.sourceAccount}</span>}
               </div>
-                {/* Seleccione una cuenta destino */}
+
               <div className="form-group">
                 <label htmlFor="destinationAccount">Cuenta Destino *</label>
                 {transferType === 'own' ? (
@@ -250,7 +251,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                     className={errors.destinationAccount ? 'error' : ''}
                     disabled={!formData.sourceAccount}
                   >
-                   <option value="" disabled hidden>Selecciona una cuenta</option>
+                    <option value="" disabled hidden>Selecciona una cuenta</option>
                     {getAvailableDestinationAccounts().map(account => (
                       <option key={account.id} value={account.id}>
                         {account.name} - {account.number}
@@ -272,7 +273,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                 {errors.destinationAccount && <span className="error-message">{errors.destinationAccount}</span>}
                 {isValidating && <span className="info-message">Validando cuenta...</span>}
               </div>
-                {/* Moneda */}
+
               <div className="form-group">
                 <label htmlFor="currency">Moneda *</label>
                 <select
@@ -282,13 +283,13 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                   onChange={handleInputChange}
                   className={errors.currency ? 'error' : ''}
                 >
-                 <option value="" disabled hidden>Selecciona moneda</option>
+                  <option value="" disabled hidden>Selecciona moneda</option>
                   <option value="CRC">CRC - Colones</option>
                   <option value="USD">USD - Dólares</option>
                 </select>
                 {errors.currency && <span className="error-message">{errors.currency}</span>}
               </div>
-                 {/* Monto */}
+
               <div className="form-group">
                 <label htmlFor="amount">Monto *</label>
                 <input
@@ -304,7 +305,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                 />
                 {errors.amount && <span className="error-message">{errors.amount}</span>}
               </div>
-                 {/* Descipcion */}
+
               <div className="form-group">
                 <label htmlFor="description">Descripción (opcional)</label>
                 <textarea
@@ -320,7 +321,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                 <span className="char-count">{formData.description.length}/255</span>
                 {errors.description && <span className="error-message">{errors.description}</span>}
               </div>
-                {/* Boton de Atrás */}
+
               <div className="form-actions">
                 <button 
                   type="button" 
@@ -329,7 +330,6 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                 >
                   Atrás
                 </button>
-                {/* Boton de Continuar */}
                 <button 
                   type="button" 
                   className="btn-primary"
@@ -342,28 +342,25 @@ const Transfers = ({ userAccounts = [], onClose }) => {
             </div>
           )}
 
-          {/* Paso 3: Confirmación 
-            *Aqui aparecera los datos registrados anteriormente.
-            */}
+          {/* Paso 3: Confirmación */}
           {step === 'confirm' && (
             <div className="transfers-confirm">
               <h3>Confirmar Transferencia</h3>
               <p className="confirm-subtitle">Verifica los datos antes de confirmar</p>
-               {/* div:confirm-details:  es el contenedor de la informacion*/}
+
               <div className="confirm-details">
-                {/* div:confirm-item: es el dato que aparece en el contenedor(tipo,desde,hacia,etc) */}
                 <div className="confirm-item">
                   <span className="confirm-label">Tipo:</span>
                   <span className="confirm-value">
                     {transferType === 'own' ? 'Cuentas Propias' : 'Terceros'}
                   </span>
                 </div>
-                {/* Desde */}
+
                 <div className="confirm-item">
                   <span className="confirm-label">Desde:</span>
                   <span className="confirm-value">{getAccountName(formData.sourceAccount)}</span>
                 </div>
-                  {/* Hacia */}
+
                 <div className="confirm-item">
                   <span className="confirm-label">Hacia:</span>
                   <span className="confirm-value">
@@ -373,7 +370,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                     }
                   </span>
                 </div>
-                     {/* Monto */}
+
                 <div className="confirm-item">
                   <span className="confirm-label">Monto:</span>
                   <span className="confirm-value highlight">
@@ -383,12 +380,11 @@ const Transfers = ({ userAccounts = [], onClose }) => {
 
                 {formData.description && (
                   <div className="confirm-item">
-                     {/* Descripción */}
                     <span className="confirm-label">Descripción:</span>
                     <span className="confirm-value">{formData.description}</span>
                   </div>
                 )}
-                {/* Fecha */}
+
                 <div className="confirm-item">
                   <span className="confirm-label">Fecha:</span>
                   <span className="confirm-value">
@@ -402,7 +398,7 @@ const Transfers = ({ userAccounts = [], onClose }) => {
                   </span>
                 </div>
               </div>
-                    {/* Botones(modificar/Conrmar) */}
+
               <div className="form-actions">
                 <button 
                   type="button" 
