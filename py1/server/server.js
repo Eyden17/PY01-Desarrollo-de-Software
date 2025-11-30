@@ -17,14 +17,13 @@ dotenv.config();
 
 const app = express();
 
-
-
-// Habilita CORS antes de todo
+// CORS configuration
 app.use(
   cors({
-    origin: "*",  // 
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: "*",  // Permite todos los orígenes
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true // Agregué credentials
   })
 );
 
@@ -45,8 +44,10 @@ app.use("/api/v1/audit", auditRoutes); // rutas de auditoria (list user audit)
 app.use(errorHandler);
 
 // Levantar servidor
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Servidor corriendo en puerto ${process.env.PORT || 3000}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(` Servidor corriendo en puerto ${PORT}`);
+  console.log(` CORS habilitado para todos los orígenes`);
 });
 
 export default app;
