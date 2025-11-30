@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "../assets/css/Login.css";
 import { useNavigate } from "react-router-dom";
 import PasswordRecovery from "./PasswordRecovery.jsx";
 import TermsAndConditionsModal from "./TermsAndConditionsModal.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+// Usa variables de entorno
+const API_URL = process.env.REACT_APP_API_URL || "https://bancoastralis-api.up.railway.app/api/v1";
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 export default function LoginRegisterForm() {
   const navigate = useNavigate();
@@ -12,8 +15,8 @@ export default function LoginRegisterForm() {
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Estados para mostrar/ocultar contraseñas
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -30,29 +33,7 @@ export default function LoginRegisterForm() {
     password: "",
     confirmPassword: "",
   });
-  const [testUser, setTestUser] = useState(null);
 
-  // Carga usuario de prueba desde JSON
-  useEffect(() => {
-    const loadTestUser = async () => {
-      try {
-        const response = await fetch('/assets/js/user.json');
-        const data = await response.json();
-        setTestUser(data.testUser);
-      } catch (error) {
-        console.error('Error al cargar el usuario de prueba:', error);
-        // Fallback en caso de error
-        setTestUser({
-          username: "josesolano",
-          password: "123456"
-        });
-      }
-    };
-
-    loadTestUser();
-  }, []);
-
-  // Funciones para mostrar/ocultar contraseñas
   const toggleLoginPasswordVisibility = () => {
     setShowLoginPassword(!showLoginPassword);
   };
@@ -65,15 +46,8 @@ export default function LoginRegisterForm() {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  //Validacion para acceder.
-  const handleAcceder = () => {
-
-    if (!testUser) {
-      alert("Error al cargar los datos del usuario.");
-      return;
-    }
-
-    console.log("Datos de inicio de sesión:", loginData);
+  //  Función actualizada con API Key
+  const handleAcceder = async () => {
     const { username, password } = loginData;
     
     if (!username || !password) {
@@ -81,27 +55,65 @@ export default function LoginRegisterForm() {
       return;
     }
 
-    if (!testUser) {
-      alert("Error al cargar los datos del usuario.");
+    // Verificación de seguridad
+    if (!API_KEY) {
+      console.error("API_KEY no está configurada en .env");
+      alert("Error de configuración. Contacte al administrador.");
       return;
     }
 
-    if (username === testUser.username && password === testUser.password) {
-      alert("Inicio de sesión exitoso");
-      // Reinicia los valores del iniciar sesion
-      setLoginData({ username: "", password: "" });
+    setIsLoading(true);
+
+    const payload = {
+      user: username.trim(),
+      password: password,
+    };
+    
+    console.log(" Datos enviados:", payload);
+    console.log(" URL:", `${API_URL}/auth/login`);
+
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY, // Header requerido por tu middleware
+        },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("Status:", response.status);
       
-      navigate('/dashboard');      
-      console.log("Redirigiendo al módulo del banco...");
-      
-    } else {
-      alert("Credenciales incorrectas");
+      const data = await response.json();
+      console.log("Respuesta:", data);
+
+      if (response.ok && data.success) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        alert("Inicio de sesión exitoso");
+        
+        setLoginData({ username: "", password: "" });
+        setShowLoginPassword(false);
+        
+        navigate('/dashboard');
+        console.log("Usuario autenticado:", data.user);
+      } else {
+        console.error("Error:", data);
+        alert(data.message || data.error || "Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error("Error de red:", error);
+      alert("Error de conexión con el servidor. Por favor, intente nuevamente.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Manejo de términos y condiciones
+  // ... resto del código sin cambios (handleTermsCheckboxClick, handleTermsAccept, etc.)
+
   const handleTermsCheckboxClick = (e) => {
-    e.preventDefault(); // Previene el cambio automático del checkbox
+    e.preventDefault();
     setShowTermsModal(true);
   };
 
@@ -113,7 +125,6 @@ export default function LoginRegisterForm() {
     setShowTermsModal(false);
   };
 
-  //Validacion para Registro.
   const handleRegistrarme = () => {
     const {
       name,
@@ -127,7 +138,6 @@ export default function LoginRegisterForm() {
       username,
     } = registerData;
 
-    // Validaciones
     if (
       !name ||
       !email ||
@@ -142,7 +152,6 @@ export default function LoginRegisterForm() {
       return;
     }
 
-    // Validación de términos y condiciones
     if (!termsAccepted) {
       alert("Debe aceptar los términos y condiciones para continuar.");
       return;
@@ -153,7 +162,6 @@ export default function LoginRegisterForm() {
       return;
     }
 
-    // Username: 4–20 caracteres, minúsculas, números y ._-
     if (!/^[a-z0-9._-]{4,20}$/.test(username)) {
       alert(
         "El usuario debe tener entre 4 y 20 caracteres, usando solo minúsculas, números o . _ -"
@@ -161,7 +169,6 @@ export default function LoginRegisterForm() {
       return;
     }
 
-    // Email: formato estándar y convertir a minúsculas
     const normalizedEmail = email.toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
       alert("Ingrese un correo electrónico válido.");
@@ -169,7 +176,6 @@ export default function LoginRegisterForm() {
     }
     registerData.email = normalizedEmail;
 
-    // Validar identificación según tipo
     if (identificacion === "CR") {
       if (!/^\d-\d{4}-\d{4}$/.test(identificacionNumero)) {
         alert("La cédula nacional debe tener el formato #-####-####");
@@ -189,13 +195,11 @@ export default function LoginRegisterForm() {
       }
     }
 
-    // Teléfono: valida formato +506 ####-####
     if (phone && !/^\+506\s?\d{4}-\d{4}$/.test(phone)) {
       alert("El teléfono debe tener el formato +506 ####-####");
       return;
     }
 
-    // Contraseña: mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
       alert(
         "La contraseña debe tener mínimo 8 caracteres, incluir al menos una mayúscula, una minúscula y un número."
@@ -203,14 +207,12 @@ export default function LoginRegisterForm() {
       return;
     }
 
-    // Confirmación de contraseña
     if (password !== confirmPassword) {
       alert("Las contraseñas no coinciden.");
       return;
     }
 
     alert("Registro exitoso ");
-     // Reinicia los valores del formulario
     setRegisterData({
       identificacion: "",
       identificacionNumero: "",
@@ -223,14 +225,10 @@ export default function LoginRegisterForm() {
       confirmPassword: "",
     });
 
-    // Reset términos y condiciones
     setTermsAccepted(false);
-
-    // Reset estados de visibilidad de contraseña
     setShowRegisterPassword(false);
     setShowConfirmPassword(false);
 
-    // Pasar a login automáticamente
     toggleToLogin();
   };
 
@@ -244,9 +242,7 @@ export default function LoginRegisterForm() {
 
   const backToLogin = () => {
     setShowLogin(true);
-    // Reset términos cuando regresa al login
     setTermsAccepted(false);
-    // Reset estados de visibilidad de contraseña
     setShowRegisterPassword(false);
     setShowConfirmPassword(false);
   };
@@ -260,7 +256,6 @@ export default function LoginRegisterForm() {
   };
 
   const handlePasswordRecoverySuccess = () => {
-    // limpia el formulario de login o mostrar mensaje
     setLoginData({ username: "", password: "" });
     setShowLoginPassword(false);
   };
@@ -270,9 +265,7 @@ export default function LoginRegisterForm() {
       <main className="main-container">
         <div className="form-wrapper">
           {showLogin ? (
-            // Vista de Login (por defecto)
             <>
-              {/* Panel de Inicio de Sesión (izquierda) */}
               <div className="form-panel">
                 <div className="form-content">
                   <h2 className="form-title">Iniciar Sesión</h2>
@@ -287,6 +280,8 @@ export default function LoginRegisterForm() {
                         onChange={(e) =>
                           setLoginData({ ...loginData, username: e.target.value })
                         }
+                        disabled={isLoading}
+                        autoComplete="off"
                       />
                     </div>
 
@@ -302,24 +297,32 @@ export default function LoginRegisterForm() {
                             password: e.target.value,
                           })
                         }
+                        disabled={isLoading}
+                        autoComplete="off"
                       />
                       <button
                         type="button"
                         className="password-toggle-btn"
                         onClick={toggleLoginPasswordVisibility}
-                        aria-label={showConfirmPassword  ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        aria-label={showLoginPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        disabled={isLoading}
                       >
-                         {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                        {showLoginPassword ? <FaEyeSlash /> : <FaEye />}
                       </button>
                     </div>
 
-                    <button onClick={handleAcceder} className="form-button">
-                      Acceder
+                    <button 
+                      onClick={handleAcceder} 
+                      className="form-button"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Cargando..." : "Acceder"}
                     </button>
 
                     <button
                       onClick={handleOpenPasswordRecovery}
                       className="recover-password-button"
+                      disabled={isLoading}
                     >
                       ¿Olvidó su usuario o contraseña?
                     </button>
@@ -327,7 +330,6 @@ export default function LoginRegisterForm() {
                 </div>
               </div>
 
-              {/* Panel promocional (derecha) */}
               <div className="promo-panel">
                 <h2 className="promo-title">¿Aún No Tienes una Cuenta?</h2>
                 <p className="promo-text">
@@ -339,8 +341,8 @@ export default function LoginRegisterForm() {
               </div>
             </>
           ) : (
-            // Vista de Registro completa
             <div className="register-full-panel">
+              {/* Todo el código de registro sin cambios */}
               <div className="register-header">
                 <button onClick={backToLogin} className="back-button">
                   ←
@@ -354,7 +356,6 @@ export default function LoginRegisterForm() {
                 </p>
 
                 <div className="input-group-large">
-                  {/*Aqui inician los input y comboBox*/}
                   <div className="input-row">
                     <select
                       className="form-input"
@@ -375,7 +376,7 @@ export default function LoginRegisterForm() {
                       <option value="Passp">Pasaporte</option>
                     </select>
                   </div>
-                  {/* Número de identificación */}
+
                   <div className="input-row">
                     <input
                       type="text"
@@ -391,7 +392,6 @@ export default function LoginRegisterForm() {
                     />
                   </div>
 
-                  {/* Username */}
                   <div className="input-row">
                     <input
                       type="text"
@@ -422,7 +422,6 @@ export default function LoginRegisterForm() {
                     />
                   </div>
 
-                  {/* Fecha de nacimiento */}
                   <div className="input-row-labeled">
                     <p className="input-label">Fecha de nacimiento</p>
                     <input
@@ -454,19 +453,17 @@ export default function LoginRegisterForm() {
                     />
                   </div>
 
-                  {/* Teléfono */}
                   <div className="input-row-labeled">
                     <p className="input-label">Número de teléfono</p>
                     <div className="input-row flex">
                       <span className="prefix">+506</span>
                       <input
-                      //Ayuda de chat GPT para formatear el teléfono
                         type="tel"
                         placeholder="####-####"
                         className="form-input"
                         value={registerData.phone.replace("+506", "").trim()}
                         onChange={(e) => {
-                          let digits = e.target.value.replace(/\D/g, ""); // solo números
+                          let digits = e.target.value.replace(/\D/g, "");
                           if (digits.length > 8) digits = digits.slice(0, 8);
                           const formatted =
                             digits.length > 4
@@ -481,7 +478,6 @@ export default function LoginRegisterForm() {
                     </div>
                   </div>
 
-                  {/* Contraseña con botón mostrar/ocultar */}
                   <div className="password-input-container">
                     <input
                       type={showRegisterPassword ? "text" : "password"}
@@ -505,7 +501,6 @@ export default function LoginRegisterForm() {
                     </button>
                   </div>
 
-                  {/* Confirmar contraseña con botón mostrar/ocultar */}
                   <div className="password-input-container">
                     <input
                       type={showConfirmPassword ? "text" : "password"}
@@ -565,7 +560,6 @@ export default function LoginRegisterForm() {
         </div>
       </main>
 
-      {/* Modal de Recuperación de Contraseña */}
       {showPasswordRecovery && (
         <PasswordRecovery
           onClose={handleClosePasswordRecovery}
@@ -573,7 +567,6 @@ export default function LoginRegisterForm() {
         />
       )}
 
-      {/* Modal de Términos y Condiciones */}
       <TermsAndConditionsModal
         isOpen={showTermsModal}
         onClose={handleTermsModalClose}
