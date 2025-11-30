@@ -1,18 +1,33 @@
 import express from "express";
+import cors from "cors";   
 import dotenv from "dotenv";
+
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
 import otpRoutes from "./routes/otpRoutes.js";
 import transferRoutes from "./routes/transferRoutes.js";
-import { errorHandler } from "./middleware/errorMiddleware.js";
 import cardsRoutes from "./routes/cardsRoutes.js";
 import bankRoutes from "./routes/bankRoutes.js";
 import auditRoutes from "./routes/auditRoutes.js";
 
+import { errorHandler } from "./middleware/errorMiddleware.js";
+
 dotenv.config();
 
 const app = express();
+
+
+
+// Habilita CORS antes de todo
+app.use(
+  cors({
+    origin: "*",  // 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 
 // Prefijo base versionado
@@ -25,11 +40,13 @@ app.use("/api/v1/cards", cardsRoutes); // rutas de tarjetas (create, list, get, 
 app.use("/api/v1/bank", bankRoutes); // rutas bancarias (validate account)
 app.use("/api/v1/audit", auditRoutes); // rutas de auditoria (list user audit)
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Servidor corriendo en puerto ${process.env.PORT || 3000}`);
-});
 
 // Manejo centralizado de errores
 app.use(errorHandler);
+
+// Levantar servidor
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Servidor corriendo en puerto ${process.env.PORT || 3000}`);
+});
 
 export default app;
