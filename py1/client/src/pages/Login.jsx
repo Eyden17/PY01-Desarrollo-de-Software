@@ -77,7 +77,7 @@ export default function LoginRegisterForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY, // Header requerido por tu middleware
+          "x-api-key": API_KEY, // Header requerido por middleware
         },
         body: JSON.stringify(payload),
       });
@@ -110,7 +110,7 @@ export default function LoginRegisterForm() {
     }
   };
 
-  // ... resto del código sin cambios (handleTermsCheckboxClick, handleTermsAccept, etc.)
+  // sin cambios (handleTermsCheckboxClick, handleTermsAccept, etc.)
 
   const handleTermsCheckboxClick = (e) => {
     e.preventDefault();
@@ -125,112 +125,188 @@ export default function LoginRegisterForm() {
     setShowTermsModal(false);
   };
 
-  const handleRegistrarme = () => {
-    const {
-      name,
-      email,
-      phone,
-      password,
-      confirmPassword,
-      identificacion,
-      identificacionNumero,
-      dob,
-      username,
-    } = registerData;
+  // Handle Registro actualizado
 
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !confirmPassword ||
-      !identificacion ||
-      !identificacionNumero ||
-      !dob ||
-      !username
-    ) {
-      alert("Por favor complete todos los campos.");
-      return;
-    }
+ const handleRegistrarme = async () => {
+  const {
+    name,
+    email,
+    phone,
+    password,
+    confirmPassword,
+    identificacion,
+    identificacionNumero,
+    dob,
+    username,
+  } = registerData;
 
-    if (!termsAccepted) {
-      alert("Debe aceptar los términos y condiciones para continuar.");
-      return;
-    }
+  // Validaciones
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !confirmPassword ||
+    !identificacion ||
+    !identificacionNumero ||
+    !dob ||
+    !username
+  ) {
+    alert("Por favor complete todos los campos.");
+    return;
+  }
 
-    if (!/^[a-zA-Z\s]+$/.test(name)) {
-      alert("El nombre solo puede contener letras y espacios.");
-      return;
-    }
+  if (!termsAccepted) {
+    alert("Debe aceptar los términos y condiciones para continuar.");
+    return;
+  }
 
-    if (!/^[a-z0-9._-]{4,20}$/.test(username)) {
-      alert(
-        "El usuario debe tener entre 4 y 20 caracteres, usando solo minúsculas, números o . _ -"
-      );
-      return;
-    }
+  if (!/^[a-zA-Z\s]+$/.test(name)) {
+    alert("El nombre solo puede contener letras y espacios.");
+    return;
+  }
 
-    const normalizedEmail = email.toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      alert("Ingrese un correo electrónico válido.");
-      return;
-    }
-    registerData.email = normalizedEmail;
+  if (!/^[a-z0-9._-]{4,20}$/.test(username)) {
+    alert(
+      "El usuario debe tener entre 4 y 20 caracteres, usando solo minúsculas, números o . _ -"
+    );
+    return;
+  }
 
-    if (identificacion === "CR") {
-      if (!/^\d-\d{4}-\d{4}$/.test(identificacionNumero)) {
-        alert("La cédula nacional debe tener el formato #-####-####");
-        return;
-      }
-    } else if (identificacion === "DX") {
-      if (!/^\d{11,12}$/.test(identificacionNumero)) {
-        alert("El DIMEX debe tener entre 11 y 12 dígitos numéricos.");
-        return;
-      }
-    } else if (identificacion === "Passp") {
-      if (!/^[A-Z0-9]{6,12}$/.test(identificacionNumero)) {
-        alert(
-          "El pasaporte debe tener entre 6 y 12 caracteres alfanuméricos en mayúscula."
-        );
-        return;
-      }
-    }
+  const normalizedEmail = email.toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+    alert("Ingrese un correo electrónico válido.");
+    return;
+  }
 
-    if (phone && !/^\+506\s?\d{4}-\d{4}$/.test(phone)) {
-      alert("El teléfono debe tener el formato +506 ####-####");
-      return;
-    }
+  if (identificacion === "CR") {
+  // Cédula física costarricense: #-####-####
+  if (!/^\d-\d{4}-\d{4}$/.test(identificacionNumero)) {
+    alert("La cédula nacional debe tener el formato #-####-####");
+    return;
+  }
 
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
-      alert(
-        "La contraseña debe tener mínimo 8 caracteres, incluir al menos una mayúscula, una minúscula y un número."
-      );
-      return;
-    }
+} else if (identificacion === "DX") {
+  // DIMEX: 11 o 12 dígitos
+  if (!/^\d{11,12}$/.test(identificacionNumero)) {
+    alert("El DIMEX debe tener entre 11 y 12 dígitos numéricos.");
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
-      return;
-    }
+} else if (identificacion === "Passp") {
+  // Pasaporte: alfanumérico 6 a 12 en mayúscula
+  if (!/^[A-Z0-9]{6,12}$/.test(identificacionNumero)) {
+    alert("El pasaporte debe tener entre 6 y 12 caracteres alfanuméricos en mayúscula.");
+    return;
+  }
 
-    alert("Registro exitoso ");
-    setRegisterData({
-      identificacion: "",
-      identificacionNumero: "",
-      username: "",
-      name: "",
-      dob: "",
-      phone: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+} else if (identificacion === "JUR") {
+  // Cédula Jurídica: formato #:###:#### (o ######### sin guiones)
+  if (!/^\d-\d{3}-\d{3}$/.test(identificacionNumero) &&
+      !/^\d{10}$/.test(identificacionNumero)) {
+    alert("La cédula jurídica debe tener el formato #-###-### o 10 dígitos numéricos.");
+    return;
+  }
+}
+
+
+  if (phone && !/^\+506\s?\d{4}-\d{4}$/.test(phone)) {
+    alert("El teléfono debe tener el formato +506 ####-####");
+    return;
+  }
+
+  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+    alert(
+      "La contraseña debe tener mínimo 8 caracteres, incluir al menos una mayúscula, una minúscula y un número."
+    );
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("Las contraseñas no coinciden.");
+    return;
+  }
+
+  // datos para la API
+  setIsLoading(true);
+
+  // Separa nombre completo en nombre y apellido
+  const nameParts = name.trim().split(/\s+/);
+  const nombre = nameParts[0];
+  const apellido = nameParts.slice(1).join(" ") || nombre;
+
+  // Mapea tipo de identificación al formato que espera la API
+const tipoIdentificacionMap = {
+  "CR": "Cédula Física",
+  "DX": "DIMEX",
+  "Passp": "Pasaporte",
+  "JUR": "Cédula Jurídica"
+};
+
+
+ 
+  const payload = {
+    nombre: nombre,
+    apellido: apellido,
+    correo: normalizedEmail,
+    usuario: username,
+    password: password,
+    identificacion: identificacionNumero,
+    tipo_identificacion: tipoIdentificacionMap[identificacion],
+    rol: "cliente", // Rol fijo para nuevos registros
+    telefono: phone,
+    fecha_nacimiento: dob,
+  };
+
+  console.log("Datos de registro enviados:", payload);
+
+  try {
+    const response = await fetch(`${API_URL}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+      },
+      body: JSON.stringify(payload),
     });
 
-    setTermsAccepted(false);
-    setShowRegisterPassword(false);
-    setShowConfirmPassword(false);
+    console.log("Status:", response.status);
+    
+    const data = await response.json();
+    console.log("Respuesta:", data);
 
-    toggleToLogin();
-  };
+    if (response.ok) {
+      alert("¡Registro exitoso! Ahora puede iniciar sesión.");
+      
+      // Reinicia el formulario SOLO si fue exitoso
+      setRegisterData({
+        identificacion: "",
+        identificacionNumero: "",
+        username: "",
+        name: "",
+        dob: "",
+        phone: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      setTermsAccepted(false);
+      setShowRegisterPassword(false);
+      setShowConfirmPassword(false);
+
+      // Pasa a login automáticamente
+      toggleToLogin();
+    } else {
+      console.error("Error:", data);
+      alert(data.message || "Error al registrar usuario. Intente nuevamente.");
+    }
+  } catch (error) {
+    console.error("Error de red:", error);
+    alert("Error de conexión con el servidor. Por favor, intente nuevamente.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const toggleToLogin = () => {
     setShowLogin(true);
@@ -342,7 +418,7 @@ export default function LoginRegisterForm() {
             </>
           ) : (
             <div className="register-full-panel">
-              {/* Todo el código de registro sin cambios */}
+              {/* Codigo de registro  */}
               <div className="register-header">
                 <button onClick={backToLogin} className="back-button">
                   ←
@@ -371,9 +447,10 @@ export default function LoginRegisterForm() {
                       <option value="" disabled hidden>
                         Seleccione una opción
                       </option>
-                      <option value="CR">Nacional</option>
-                      <option value="DX">DIMEX</option>
+                      <option value="DIMEX">DIMEX</option>
                       <option value="Passp">Pasaporte</option>
+                      <option value="CR">Cédula Física</option>
+                      <option value="JUR">Cédula Jurídica</option>
                     </select>
                   </div>
 
