@@ -14,6 +14,13 @@
       "type": "Corriente",
       "currency": "USD",
       "balance": 5230.00
+    },
+        {
+      "account_id": "CR01-0001-0003-987654321092",
+      "alias": "Cuenta Corriente",
+      "type": "Corriente",
+      "currency": "USD",
+      "balance": 5230.00
     }
   ],
   "creditCards": [
@@ -39,6 +46,16 @@
     },
     {
       "id": "card-3",
+      "type": "Black",
+      "number": "3782 8223 4463 1005",
+      "pin": 1234,
+      "cvv": 789,
+      "exp": "05/30",
+      "holder": "JUAN PEREZ",
+      "vendor": "MC"
+    },
+    {
+      "id": "card-4",
       "type": "Black",
       "number": "3782 8223 4463 1005",
       "pin": 1234,

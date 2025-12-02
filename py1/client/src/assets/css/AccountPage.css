@@ -1,0 +1,357 @@
+/* ==========================
+   LAYOUT GENERAL
+========================== */
+.account-page {
+  min-height: 100vh;
+  background: var(--c-background);
+  padding-bottom: 3rem;
+}
+
+/* ==========================
+   HEADER
+========================== */
+.acc-header {
+  position: relative;
+  background: var(--bg-gradient);
+  padding: 2rem 1.5rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  color: #fff;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.acc-header::after {
+  content: "";
+  position: absolute;
+  right: -20px;
+  top: -100px;
+  width: 480px;
+  height: 480px;
+
+  background-image: url("../img/estrella.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  opacity: 0.18;
+  transform: rotate(-4deg);
+
+  filter: brightness(0.9) blur(0.9px);
+  pointer-events: none;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.back-btn:hover {
+  opacity: 1;
+}
+
+.header-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.header-sub {
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+/* ==========================
+   CONTENIDO
+========================== */
+.account-content {
+  max-width: 900px;
+  margin: auto;
+  padding: 1.5rem;
+}
+
+/* ==========================
+   BALANCE CARD
+========================== */
+.balance-card {
+  background: var(--c-surface);
+  border-radius: 1.2rem;
+  padding: 1.6rem;
+  box-shadow: var(--shadow-dark);
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  color: var(--c-muted);
+  font-size: 0.9rem;
+}
+
+.balance {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--c-balance);
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-top: 0.4rem;
+}
+
+.info-row {
+  border-top: 1px solid var(--c-border);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.value {
+  font-weight: 600;
+  color: var(--c-text-secondary);
+}
+
+/* ==========================
+   FILTER CARD
+========================== */
+.filter-card {
+  background: var(--c-surface);
+  border-radius: 1.2rem;
+  padding: 1.6rem;
+  box-shadow: var(--shadow-dark);
+}
+
+.filter-title {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+@media (min-width: 600px) {
+  .filters {
+    flex-direction: row;
+  }
+}
+
+/* ==========================
+   SELECT NATIVO
+========================== */
+.filter-select {
+  padding: 0.6rem 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  font-size: 1rem;
+  color: var(--c-text-secondary);
+  cursor: pointer;
+}
+
+/* ==========================
+   INPUT CON ICONO
+========================== */
+.input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--c-muted);
+}
+
+.input {
+  width: 100%;
+  padding: 0.6rem 1rem 0.6rem 2.4rem;
+  border: 1px solid var(--c-border);
+  border-radius: 0.6rem;
+  background: var(--c-surface);
+  font-size: 1rem;
+}
+
+/* ==========================
+   MOVEMENTS
+========================== */
+.movements {
+  margin-top: 1.5rem;
+}
+
+.state-text {
+  text-align: center;
+  color: var(--c-muted);
+  padding: 2rem 0;
+}
+
+.state-text.error {
+  color: var(--c-error);
+}
+
+/* CARD DEL MOVIMIENTO */
+.movement-card {
+  background: var(--c-surface);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: var(--shadow-dark);
+  border-left: 4px solid transparent;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.movement-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.border-success {
+  border-left-color: var(--c-success);
+}
+
+.border-warning {
+  border-left-color: var(--c-warning);
+}
+
+/* FILA PRINCIPAL */
+.movement-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.movement-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.mov-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.mov-icon.success {
+  color: var(--c-success);
+}
+
+.mov-icon.warning {
+  color: var(--c-warning);
+}
+
+.mov-desc {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--c-text-secondary);
+}
+
+.mov-date {
+  color: var(--c-muted);
+  font-size: 0.8rem;
+}
+
+.mov-amount {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.mov-amount.success {
+  color: var(--c-success);
+}
+
+.mov-amount.warning {
+  color: var(--c-warning);
+}
+
+/* ==========================
+   DETALLES EXPANDIBLES
+========================== */
+.movement-details {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--c-border);
+  animation: slideFade 0.25s ease-out;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+/* animación */
+@keyframes slideFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+@media (min-width: 768px) {
+  body {
+    font-size: 17px;
+  }
+  .card-header-title,
+  .pin-title {
+    font-size: 2rem;
+  }
+  .balance,
+  .mov-amount {
+    font-size: 2rem;
+  }
+
+  .value {
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 18px;
+  }
+  .card-header-title,
+  .pin-title {
+    font-size: 2.2rem;
+  }
+  .balance,
+  .mov-amount {
+    font-size: 1.8rem;
+  }
+
+  .value {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  body {
+    font-size: 18px;
+  }
+  .card-header-title,
+  .pin-title {
+    font-size: 2.4rem;
+  }
+  .balance,
+  .mov-amount {
+    font-size: 2rem;
+  }
+
+  .value {
+    font-size: 1.1rem;
+  }
+}
