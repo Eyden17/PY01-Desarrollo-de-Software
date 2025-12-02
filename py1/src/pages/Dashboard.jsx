@@ -4,7 +4,7 @@ import CreditCard from "../assets/components/CreditCard.jsx";
 import userData from "../data/userData.json";
 import { FaRightFromBracket } from "react-icons/fa6";
 
-import { ArrowRight, Wallet, CreditCard as CreditCardIcon, FileX } from "lucide-react";
+import { ArrowRight, Wallet, CreditCard as CreditCardIcon } from "lucide-react";
 import "../assets/css/Dashboard.css";
 
 const formatCurrency = (amount, currency) => {
