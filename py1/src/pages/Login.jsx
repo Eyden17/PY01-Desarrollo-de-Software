@@ -3,11 +3,12 @@ import "../assets/css/Login.css";
 import { useNavigate } from "react-router-dom";
 import PasswordRecovery from "./PasswordRecovery.jsx";
 import TermsAndConditionsModal from "./TermsAndConditionsModal.jsx";
+import Messages from "../assets/components/Messages.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 // Usa variables de entorno
 const API_URL = process.env.REACT_APP_API_URL || "https://bancoastralis-api.up.railway.app/api/v1";
-const API_KEY = process.env.REACT_APP_API_KEY;
+const API_KEY = process.env.REACT_APP_API_KEY
 
 export default function LoginRegisterForm() {
   const navigate = useNavigate();
@@ -34,6 +35,23 @@ export default function LoginRegisterForm() {
     confirmPassword: "",
   });
 
+   // ESTADO PARA MANEJAR MENSAJES
+  const [message, setMessage] = useState({
+    show: false,
+    text: "",
+    type: "info" // 'success', 'error', 'warning', 'info'
+  });
+
+  // FUNCION HELPER PARA MOSTRAR MENSAJES
+  const showMessage = (text, type = "info") => {
+    setMessage({ show: true, text, type });
+  };
+
+  // FUNCIoN PARA CERRAR EL MENSAJE
+  const closeMessage = () => {
+    setMessage({ show: false, text: "", type: "info" });
+  };
+
   const toggleLoginPasswordVisibility = () => {
     setShowLoginPassword(!showLoginPassword);
   };
@@ -51,14 +69,14 @@ export default function LoginRegisterForm() {
     const { username, password } = loginData;
     
     if (!username || !password) {
-      alert("Por favor, complete todos los campos.");
+      showMessage("Por favor, complete todos los campos.", "warning");
       return;
     }
 
     // Verificación de seguridad
     if (!API_KEY) {
       console.error("API_KEY no está configurada en .env");
-      alert("Error de configuración. Contacte al administrador.");
+     showMessage("Error de configuración. Contacte al administrador.", "error");
       return;
     }
 
@@ -91,7 +109,7 @@ export default function LoginRegisterForm() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         
-        alert("Inicio de sesión exitoso");
+          showMessage("¡Inicio de sesión exitoso!", "success");
         
         setLoginData({ username: "", password: "" });
         setShowLoginPassword(false);
@@ -100,11 +118,11 @@ export default function LoginRegisterForm() {
         console.log("Usuario autenticado:", data.user);
       } else {
         console.error("Error:", data);
-        alert(data.message || data.error || "Credenciales incorrectas");
+       showMessage(data.message || data.error || "Credenciales incorrectas", "error");
       }
     } catch (error) {
       console.error("Error de red:", error);
-      alert("Error de conexión con el servidor. Por favor, intente nuevamente.");
+      showMessage("Error de conexión con el servidor. Por favor, intente nuevamente.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -151,83 +169,70 @@ export default function LoginRegisterForm() {
     !dob ||
     !username
   ) {
-    alert("Por favor complete todos los campos.");
-    return;
-  }
+      showMessage("Por favor complete todos los campos.", "warning");
+      return;
+    }
 
-  if (!termsAccepted) {
-    alert("Debe aceptar los términos y condiciones para continuar.");
-    return;
-  }
+    if (!termsAccepted) {
+      showMessage("Debe aceptar los términos y condiciones para continuar.", "warning");
+      return;
+    }
 
-  if (!/^[a-zA-Z\s]+$/.test(name)) {
-    alert("El nombre solo puede contener letras y espacios.");
-    return;
-  }
+    if (!/^[a-zA-Z\s]+$/.test(name)) {
+      showMessage("El nombre solo puede contener letras y espacios.", "error");
+      return;
+    }
 
-  if (!/^[a-z0-9._-]{4,20}$/.test(username)) {
-    alert(
-      "El usuario debe tener entre 4 y 20 caracteres, usando solo minúsculas, números o . _ -"
-    );
-    return;
-  }
+    if (!/^[a-z0-9._-]{4,20}$/.test(username)) {
+      showMessage("El usuario debe tener entre 4 y 20 caracteres, usando solo minúsculas, números o . _ -", "error");
+      return;
+    }
 
-  const normalizedEmail = email.toLowerCase();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-    alert("Ingrese un correo electrónico válido.");
-    return;
-  }
+    const normalizedEmail = email.toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      showMessage("Ingrese un correo electrónico válido.", "error");
+      return;
+    }
 
-  if (identificacion === "CR") {
-  // Cédula física costarricense: #-####-####
-  if (!/^\d-\d{4}-\d{4}$/.test(identificacionNumero)) {
-    alert("La cédula nacional debe tener el formato #-####-####");
-    return;
-  }
+    if (identificacion === "CR") {
+      if (!/^\d-\d{4}-\d{4}$/.test(identificacionNumero)) {
+        showMessage("La cédula nacional debe tener el formato #-####-####", "error");
+        return;
+      }
+    } else if (identificacion === "DX") {
+      if (!/^\d{11,12}$/.test(identificacionNumero)) {
+        showMessage("El DIMEX debe tener entre 11 y 12 dígitos numéricos.", "error");
+        return;
+      }
+    } else if (identificacion === "Passp") {
+      if (!/^[A-Z0-9]{6,12}$/.test(identificacionNumero)) {
+        showMessage("El pasaporte debe tener entre 6 y 12 caracteres alfanuméricos en mayúscula.", "error");
+        return;
+      }
+    } else if (identificacion === "JUR") {
+      if (!/^\d-\d{3}-\d{3}$/.test(identificacionNumero) &&
+          !/^\d{10}$/.test(identificacionNumero)) {
+        showMessage("La cédula jurídica debe tener el formato #-###-### o 10 dígitos numéricos.", "error");
+        return;
+      }
+    }
 
-} else if (identificacion === "DX") {
-  // DIMEX: 11 o 12 dígitos
-  if (!/^\d{11,12}$/.test(identificacionNumero)) {
-    alert("El DIMEX debe tener entre 11 y 12 dígitos numéricos.");
-    return;
-  }
+    if (phone && !/^\+506\s?\d{4}-\d{4}$/.test(phone)) {
+      showMessage("El teléfono debe tener el formato +506 ####-####", "error");
+      return;
+    }
 
-} else if (identificacion === "Passp") {
-  // Pasaporte: alfanumérico 6 a 12 en mayúscula
-  if (!/^[A-Z0-9]{6,12}$/.test(identificacionNumero)) {
-    alert("El pasaporte debe tener entre 6 y 12 caracteres alfanuméricos en mayúscula.");
-    return;
-  }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+      showMessage("La contraseña debe tener mínimo 8 caracteres, incluir al menos una mayúscula, una minúscula y un número.", "error");
+      return;
+    }
 
-} else if (identificacion === "JUR") {
-  // Cédula Jurídica: formato #:###:#### (o ######### sin guiones)
-  if (!/^\d-\d{3}-\d{3}$/.test(identificacionNumero) &&
-      !/^\d{10}$/.test(identificacionNumero)) {
-    alert("La cédula jurídica debe tener el formato #-###-### o 10 dígitos numéricos.");
-    return;
-  }
-}
+    if (password !== confirmPassword) {
+      showMessage("Las contraseñas no coinciden.", "error");
+      return;
+    }
 
-
-  if (phone && !/^\+506\s?\d{4}-\d{4}$/.test(phone)) {
-    alert("El teléfono debe tener el formato +506 ####-####");
-    return;
-  }
-
-  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
-    alert(
-      "La contraseña debe tener mínimo 8 caracteres, incluir al menos una mayúscula, una minúscula y un número."
-    );
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    alert("Las contraseñas no coinciden.");
-    return;
-  }
-
-  // datos para la API
-  setIsLoading(true);
+    setIsLoading(true);
 
   // Separa nombre completo en nombre y apellido
   const nameParts = name.trim().split(/\s+/);
@@ -275,7 +280,7 @@ const tipoIdentificacionMap = {
     console.log("Respuesta:", data);
 
     if (response.ok) {
-      alert("¡Registro exitoso! Ahora puede iniciar sesión.");
+      showMessage("¡Registro exitoso! Ahora puede iniciar sesión.", "success");
       
       // Reinicia el formulario SOLO si fue exitoso
       setRegisterData({
@@ -298,11 +303,11 @@ const tipoIdentificacionMap = {
       toggleToLogin();
     } else {
       console.error("Error:", data);
-      alert(data.message || "Error al registrar usuario. Intente nuevamente.");
+      showMessage(data.message || "Error al registrar usuario. Intente nuevamente.", "error");
     }
   } catch (error) {
     console.error("Error de red:", error);
-    alert("Error de conexión con el servidor. Por favor, intente nuevamente.");
+      showMessage("Error de conexión con el servidor. Por favor, intente nuevamente.", "error");
   } finally {
     setIsLoading(false);
   }

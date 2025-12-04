@@ -1,0 +1,123 @@
+/* =============================================================================
+   Messages.css — Mobile First
+   ============================================================================= */
+
+/* Estilos base (MÓVILES) */
+.message-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  left: 10px;
+  z-index: 9999;
+  padding: 14px 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  animation: slideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.message-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.message-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.message-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: inherit;
+}
+
+.message-close-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.message-close-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.message-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Tipos de mensajes */
+.message-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-left: 4px solid #047857;
+}
+
+.message-error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-left: 4px solid #b91c1c;
+}
+
+.message-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border-left: 4px solid #b45309;
+}
+
+.message-info {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-left: 4px solid #1d4ed8;
+}
+
+/* =============================================================================
+   Desktop (pantallas grandes)
+   ============================================================================= */
+@media (min-width: 640px) {
+  .message-container {
+    top: 20px;
+    right: 20px;
+    left: auto;
+    min-width: 320px;
+    max-width: 500px;
+    padding: 16px 20px;
+  }
+
+  .message-icon {
+    font-size: 24px;
+  }
+
+  .message-text {
+    font-size: 15px;
+  }
+}
