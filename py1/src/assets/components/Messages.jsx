@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import "../assets/css/Messages.css";
+import "../css/Messages.css";
 import { FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaTimes } from "react-icons/fa";
 
 /**
