@@ -655,12 +655,13 @@ const tipoIdentificacionMap = {
         onAccept={handleTermsAccept}
       />
        {/* Componente de mensajes */}
-      <Messages 
-        show={message.show}
-        text={message.text}
-        type={message.type}
-        onClose={closeMessage}
-      />
+      {message.show && (
+  <Messages 
+    message={message.text}  // ← Cambiar text por message
+    type={message.type}
+    onClose={closeMessage}
+  />
+  )}
     </>
   );
 }

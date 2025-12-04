@@ -6,7 +6,8 @@ import { FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaTimes } from "rea
  * Componente de mensajes para mostrar alertas de éxito, error, info o advertencia
  */
 export default function Messages({ 
-  message, 
+  show = false,  
+  text,          
   type = "info", 
   onClose, 
   duration = 5000,
@@ -14,14 +15,17 @@ export default function Messages({
 }) {
   
   useEffect(() => {
-    if (autoClose && duration > 0) {
+    if (show && autoClose && duration > 0) {
       const timer = setTimeout(() => {
         if (onClose) onClose();
       }, duration);
 
       return () => clearTimeout(timer);
     }
-  }, [autoClose, duration, onClose]);
+  }, [show, autoClose, duration, onClose]);
+
+  // No renderizar si show es false
+  if (!show) return null;
 
   // Determinar el ícono según el tipo
   const getIcon = () => {
@@ -42,7 +46,7 @@ export default function Messages({
     <div className={`message-container message-${type}`}>
       <div className="message-content">
         {getIcon()}
-        <p className="message-text">{message}</p>
+        <p className="message-text">{text}</p>
       </div>
       
       {onClose && (
