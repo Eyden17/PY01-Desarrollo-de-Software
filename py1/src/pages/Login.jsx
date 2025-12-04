@@ -654,6 +654,13 @@ const tipoIdentificacionMap = {
         onClose={handleTermsModalClose}
         onAccept={handleTermsAccept}
       />
+       {/* Componente de mensajes */}
+      <Messages 
+        show={message.show}
+        text={message.text}
+        type={message.type}
+        onClose={closeMessage}
+      />
     </>
   );
 }
