@@ -226,7 +226,7 @@
 .movement-main {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .movement-info {
@@ -252,6 +252,13 @@
   font-weight: 600;
   font-size: 1rem;
   color: var(--c-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .mov-amount {
+    width: 60%;
+    text-align: right;
+  }
 }
 
 .mov-date {
