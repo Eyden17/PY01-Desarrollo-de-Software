@@ -43,7 +43,7 @@
 @media (min-width: 1024px) {
   .card {
     width: clamp(300px, 22vw, 400px);
-    height: clamp(180px, 14vw, 250px);
+    height: clamp(190px, 14vw, 250px);
   }
 }
 

@@ -79,7 +79,7 @@ const CreditCard = ({ type, number, exp, holder, vendor }) => {
         </div>
 
         <div className="card-name" aria-label={holder}>
-          {holder}
+          {holder.toUpperCase()}
         </div>
 
         <div className="card-vendor" role="img" aria-labelledby="card-vendor">

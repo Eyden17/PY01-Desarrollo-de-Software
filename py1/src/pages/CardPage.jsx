@@ -1,14 +1,12 @@
-// src/pages/CardPage.jsx (ajusta la ruta según tu estructura)
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, ShoppingBag, Wallet, Eye } from "lucide-react";
 
 import CreditCard from "../assets/components/CreditCard.jsx";
-import userData from "../data/userData.json";
-import transactionsData from "../data/transactions.json";
-
 import "../assets/css/CardPage.css";
+
+import { apiGet } from "../services/apiClient";
+import { getCurrentUser } from "../services/authService";
 
 const formatDate = (dateStr) =>
   new Date(dateStr).toLocaleString("es-CR", {
@@ -17,63 +15,159 @@ const formatDate = (dateStr) =>
   });
 
 const formatCurrency = (amount, currency) => {
-  const formattedAmount = Math.abs(amount)
+  const num = Number(amount) || 0;
+  const formattedAmount = Math.abs(num)
     .toFixed(2)
     .replace(/\d(?=(\d{3})+\.)/g, "$&,");
   return currency === "CRC" ? `₡${formattedAmount}` : `$${formattedAmount}`;
 };
 
 export default function CardPage() {
-  const { id } = useParams();
+  const { id: cardId } = useParams();
   const navigate = useNavigate();
 
-  const card = userData.creditCards.find((c) => c.id === id);
+  const [card, setCard] = useState(null);
 
   const [transactions, setTransactions] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [filterType, setFilterType] = useState("ALL");
+
+  const [filterType, setFilterType] = useState("ALL"); 
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("loading");
+
+  const [cardStatus, setCardStatus] = useState("loading");
+  const [txStatus, setTxStatus] = useState("loading");
   const [expandedId, setExpandedId] = useState(null);
 
+  // ========= Proteger ruta y cargar datos =========
   useEffect(() => {
-    if (!card) {
+    const user = getCurrentUser();
+    if (!user) {
       navigate("/");
       return;
     }
 
-    setStatus("loading");
+    if (!cardId) {
+      navigate("/dashboard");
+      return;
+    }
 
-    setTimeout(() => {
+    const loadCard = async () => {
       try {
-        const cardTxs = transactionsData.filter((t) => t.card_id === card.id);
-        setTransactions(cardTxs);
-        setFiltered(cardTxs);
-        setStatus(cardTxs.length ? "ready" : "empty");
+        setCardStatus("loading");
+
+        const res = await apiGet(`/cards/${cardId}`);
+        const data = res?.data || res; 
+
+        if (!data) {
+          setCardStatus("error");
+          return;
+        }
+
+        const mappedCard = {
+          id: data.id,
+          type: data.tipo_tarjeta?.nombre || "Tarjeta Astralis",
+          number: data.numero_enmascarado,
+          exp: data.fecha_expiracion,
+          holder: data.titular || "Cliente Astralis",
+          vendor: "MC",
+          currency: data.moneda?.nombre || "CRC",
+          balance: Number(data.saldo_actual ?? 0),
+        };
+
+        setCard(mappedCard);
+        setCardStatus("ready");
       } catch (err) {
-        setStatus("error");
+        console.error("Error cargando tarjeta:", err);
+        setCardStatus("error");
       }
-    }, 500);
-  }, [card, navigate]);
+    };
+
+    const loadMovements = async () => {
+      try {
+        setTxStatus("loading");
+
+        const res = await apiGet(`/cards/${cardId}/movements?page_size=100`);
+        const payload = res?.data || res;
+
+        const movs = Array.isArray(payload?.movimientos)
+          ? payload.movimientos
+          : [];
+
+        const mappedTx = movs.map((m) => ({
+          id: m.id,
+          fecha: m.fecha,
+          descripcion: m.descripcion,
+          monto: Number(m.monto ?? 0),
+          tipo_nombre: m.tipo_nombre || "",
+          moneda_iso: m.moneda_iso || "CRC",
+          moneda_nombre: m.moneda_nombre || "Colones",
+        }));
+
+        console.log("Mapped Transactions:", mappedTx);
+
+        setTransactions(mappedTx);
+        setFiltered(mappedTx);
+        setTxStatus(mappedTx.length ? "ready" : "empty");
+      } catch (err) {
+        console.error("Error cargando movimientos de tarjeta:", err);
+        setTxStatus("error");
+      }
+    };
+
+    loadCard();
+    loadMovements();
+  }, [cardId, navigate]);
 
   useEffect(() => {
     let result = [...transactions];
 
     if (filterType !== "ALL") {
-      result = result.filter((t) => t.tipo === filterType);
+      result = result.filter(
+        (t) => t.tipo_nombre?.toUpperCase() === filterType
+      );
     }
 
     if (search.trim()) {
+      const q = search.toLowerCase();
       result = result.filter((t) =>
-        t.descripcion.toLowerCase().includes(search.toLowerCase())
+        (t.descripcion || "").toLowerCase().includes(q)
       );
     }
 
     setFiltered(result);
   }, [filterType, search, transactions]);
 
-  if (!card) return null;
+  if (cardStatus === "loading" && !card) {
+    return (
+      <main className="card-page">
+        <header className="card-header">
+          <button className="back-btn" onClick={() => navigate("/dashboard")}>
+            <ArrowLeft size={18} />
+            <span>Volver</span>
+          </button>
+        </header>
+        <p className="state-text">Cargando tarjeta...</p>
+      </main>
+    );
+  }
 
+  if (cardStatus === "error" || !card) {
+    return (
+      <main className="card-page">
+        <header className="card-header">
+          <button className="back-btn" onClick={() => navigate("/dashboard")}>
+            <ArrowLeft size={18} />
+            <span>Volver</span>
+          </button>
+        </header>
+        <p className="state-text state-error">
+          No se pudo cargar la tarjeta. Intenta de nuevo.
+        </p>
+      </main>
+    );
+  }
+
+  // ========= Render principal =========
   return (
     <main className="card-page">
       {/* HEADER */}
@@ -117,7 +211,6 @@ export default function CardPage() {
 
           {/* FILTROS */}
           <div className="filters">
-            {/* Select nativo */}
             <select
               className="filter-select"
               value={filterType}
@@ -128,7 +221,6 @@ export default function CardPage() {
               <option value="PAGO">Pagos</option>
             </select>
 
-            {/* Input con icono */}
             <div className="input-wrapper">
               <Search className="input-icon" />
               <input
@@ -142,76 +234,84 @@ export default function CardPage() {
 
           {/* LISTA */}
           <div className="movements">
-            {status === "loading" && (
+            {txStatus === "loading" && (
               <p className="state-text">Cargando transacciones...</p>
             )}
-            {status === "error" && (
+            {txStatus === "error" && (
               <p className="state-text state-error">
                 Error al cargar transacciones
               </p>
             )}
-            {status === "empty" && (
+            {txStatus === "empty" && (
               <p className="state-text">No hay transacciones registradas</p>
             )}
-            {status === "ready" && filtered.length === 0 && (
+            {txStatus === "ready" && filtered.length === 0 && (
               <p className="state-text">
                 No hay transacciones que coincidan con el filtro
               </p>
             )}
 
-            {status === "ready" &&
-              filtered.map((t) => (
-                <div
-                  key={t.id}
-                  className={`movement-card ${
-                    t.tipo === "PAGO" ? "border-success" : "border-primary"
-                  }`}
-                  onClick={() =>
-                    setExpandedId(expandedId === t.id ? null : t.id)
-                  }
-                >
-                  <div className="movement-main">
-                    <div className="movement-info">
-                      {t.tipo === "COMPRA" ? (
-                        <ShoppingBag className="mov-icon primary" />
-                      ) : (
-                        <Wallet className="mov-icon success" />
-                      )}
+            {txStatus === "ready" &&
+              filtered.map((t) => {
+                const isPago =
+                  t.tipo_nombre?.toUpperCase() === "PAGO" ||
+                  t.tipo_nombre?.toUpperCase() === "PAGOS";
 
-                      <div>
-                        <p className="mov-desc">{t.descripcion}</p>
-                        <p className="mov-date">{formatDate(t.fecha)}</p>
+                return (
+                  <div
+                    key={t.id}
+                    className={`movement-card ${
+                      isPago ? "border-success" : "border-primary"
+                    }`}
+                    onClick={() =>
+                      setExpandedId(expandedId === t.id ? null : t.id)
+                    }
+                  >
+                    <div className="movement-main">
+                      <div className="movement-info">
+                        {isPago ? (
+                          <Wallet className="mov-icon success" />
+                        ) : (
+                          <ShoppingBag className="mov-icon primary" />
+                        )}
+
+                        <div>
+                          <p className="mov-desc">{t.descripcion}</p>
+                          <p className="mov-date">{formatDate(t.fecha)}</p>
+                        </div>
                       </div>
+
+                      <p
+                        className={`mov-amount ${
+                          isPago ? "success" : "primary"
+                        }`}
+                      >
+                        {isPago ? "+" : "-"}
+                        {formatCurrency(t.monto, t.moneda_iso)}
+                      </p>
                     </div>
 
-                    <p
-                      className={`mov-amount ${
-                        t.tipo === "PAGO" ? "success" : "primary"
-                      }`}
-                    >
-                      {t.tipo === "PAGO" ? "+" : "-"}
-                      {formatCurrency(t.saldo, t.moneda)}
-                    </p>
+                    {expandedId === t.id && (
+                      <div className="movement-details">
+                        <div className="detail-row">
+                          <span className="label">ID:</span>
+                          <span className="value">{t.id}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Tipo:</span>
+                          <span className="value">{t.tipo_nombre}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Moneda:</span>
+                          <span className="value">
+                            {t.moneda_nombre} ({t.moneda_iso})
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  {expandedId === t.id && (
-                    <div className="movement-details">
-                      <div className="detail-row">
-                        <span className="label">ID:</span>
-                        <span className="value">{t.id}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="label">Tipo:</span>
-                        <span className="value">{t.tipo}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="label">Moneda:</span>
-                        <span className="value">{t.moneda}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       </section>

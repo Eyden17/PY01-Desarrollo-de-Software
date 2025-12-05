@@ -5,6 +5,7 @@ import PasswordRecovery from "./PasswordRecovery.jsx";
 import TermsAndConditionsModal from "./TermsAndConditionsModal.jsx";
 import Messages from "../assets/components/Messages.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { saveSession } from "../services/authService.js";
 
 // Usa variables de entorno
 const API_URL = process.env.REACT_APP_API_URL || "https://bancoastralis-api.up.railway.app/api/v1";
@@ -106,8 +107,7 @@ export default function LoginRegisterForm() {
       console.log("Respuesta:", data);
 
       if (response.ok && data.success) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        saveSession(data.token, data.user);
         
           showMessage("¡Inicio de sesión exitoso!", "success");
         
