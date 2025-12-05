@@ -8,16 +8,17 @@ import { getCurrentUser } from "../services/authService";
 const Transfers = () => {
   const navigate = useNavigate();
 
-  // ========== NUEVO: Cuentas desde API ==========
+  // ========== Estado: Cuentas desde API ==========
   const [accounts, setAccounts] = useState([]);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [globalError, setGlobalError] = useState(null);
 
+  // ========== Estado: Flujo de transferencia ==========
   const [step, setStep] = useState("select"); // 'select', 'form', 'confirm', 'result'
-  const [transferType, setTransferType] = useState(null); // 'own', 'third-party'
+  const [transferType, setTransferType] = useState(null); // 'own', 'third-party', 'external'
   const [formData, setFormData] = useState({
-    sourceAccount: "", 
-    destinationAccount: "", 
+    sourceAccount: "",
+    destinationAccount: "",
     currency: "",
     amount: "",
     description: "",
@@ -25,7 +26,7 @@ const Transfers = () => {
   const [destinationAccountInfo, setDestinationAccountInfo] = useState(null);
   const [transferResult, setTransferResult] = useState(null);
   const [errors, setErrors] = useState({});
-  const [isValidating, setIsValidating] = useState(false); // lo dejamos por si expandes terceros
+  const [isValidating, setIsValidating] = useState(false);
   const [processingTransfer, setProcessingTransfer] = useState(false);
 
   // ========== Cargar cuentas del usuario autenticado ==========
@@ -70,6 +71,7 @@ const Transfers = () => {
     loadAccounts();
   }, [navigate]);
 
+  // ========== Handlers: Selección de tipo ==========
   const handleTransferTypeSelect = (type) => {
     setTransferType(type);
     setStep("form");
@@ -85,6 +87,7 @@ const Transfers = () => {
     setTransferResult(null);
   };
 
+  // ========== Handlers: Cambios en formulario ==========
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -101,6 +104,7 @@ const Transfers = () => {
     }
   };
 
+  // ========== Validación del formulario ==========
   const validateForm = () => {
     const newErrors = {};
 
@@ -129,6 +133,7 @@ const Transfers = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ========== Continuar al paso de confirmación ==========
   const handleContinue = async () => {
     if (!validateForm()) return;
 
@@ -146,26 +151,7 @@ const Transfers = () => {
     setStep("confirm");
   };
 
-  const getAccountName = (accountId) => {
-    const account = accounts.find((acc) => acc.id === accountId);
-    return account ? `${account.name} - ${account.number}` : "";
-  };
-
-  const getAvailableDestinationAccounts = () => {
-    return accounts.filter((acc) => acc.id !== formData.sourceAccount);
-  };
-
-  const isFormValid = () => {
-    return (
-      formData.sourceAccount &&
-      formData.destinationAccount &&
-      formData.amount &&
-      parseFloat(formData.amount) > 0 &&
-      formData.currency
-    );
-  };
-
-  // ========== CONFIRMAR TRANSFERENCIA (llama a /transfers/internal) ==========
+  // ========== Confirmar transferencia interna (own/third-party) ==========
   const handleConfirmTransfer = async () => {
     setProcessingTransfer(true);
     setGlobalError(null);
@@ -201,7 +187,7 @@ const Transfers = () => {
         from_iban: fromAcc.iban,
         to_iban: toIban,
         amount: parseFloat(formData.amount),
-        currency: formData.currency, // "CRC" / "USD"
+        currency: formData.currency,
         description: formData.description || null,
       };
 
@@ -237,6 +223,90 @@ const Transfers = () => {
     }
   };
 
+  // ========== Confirmar transferencia externa ==========
+  const handleConfirmExternalTransfer = async () => {
+    setProcessingTransfer(true);
+    setGlobalError(null);
+
+    try {
+      const fromAcc = accounts.find(
+        (acc) => acc.id === formData.sourceAccount
+      );
+      if (!fromAcc) {
+        setGlobalError("No se pudo encontrar la cuenta de origen.");
+        setProcessingTransfer(false);
+        return;
+      }
+
+      const payload = {
+        from_account_id: formData.sourceAccount,
+        to_iban: formData.destinationAccount,
+        amount: parseFloat(formData.amount),
+        currency: formData.currency,
+        description: formData.description || null,
+      };
+
+      const res = await apiPost("/transfers/external", payload);
+      const data = res?.data || res;
+
+      setTransferResult({
+        success: true,
+        transactionId:
+          data?.receipt_number || data?.transfer_id || `TXN${Date.now()}`,
+        date: new Date().toLocaleString("es-CR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      });
+
+      setStep("result");
+    } catch (err) {
+      console.error("Error realizando transferencia externa:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "No se pudo procesar tu transferencia.";
+      setGlobalError(msg);
+      setTransferResult({ success: false });
+      setStep("result");
+    } finally {
+      setProcessingTransfer(false);
+    }
+  };
+
+  // ========== Manejador unificado para confirmar según tipo ==========
+  const handleConfirmClick = () => {
+    if (transferType === "external") {
+      handleConfirmExternalTransfer();
+    } else {
+      handleConfirmTransfer();
+    }
+  };
+
+  // ========== Utilidades ==========
+  const getAccountName = (accountId) => {
+    const account = accounts.find((acc) => acc.id === accountId);
+    return account ? `${account.name} - ${account.number}` : "";
+  };
+
+  const getAvailableDestinationAccounts = () => {
+    return accounts.filter((acc) => acc.id !== formData.sourceAccount);
+  };
+
+  const isFormValid = () => {
+    return (
+      formData.sourceAccount &&
+      formData.destinationAccount &&
+      formData.amount &&
+      parseFloat(formData.amount) > 0 &&
+      formData.currency
+    );
+  };
+
   const handleDownloadReceipt = () => {
     alert("Función de descarga disponible próximamente");
   };
@@ -257,6 +327,7 @@ const Transfers = () => {
     setGlobalError(null);
   };
 
+  // ========== Render ==========
   return (
     <div className="transfers-page">
       <div className="transfers-container">
@@ -278,7 +349,7 @@ const Transfers = () => {
         )}
 
         <div className="transfers-content">
-          {/* Paso 1: Selección de tipo */}
+          {/* ========== Paso 1: Selección de tipo ========== */}
           {step === "select" && (
             <div className="transfers-type-selection">
               <p className="transfers-instruction">
@@ -287,12 +358,6 @@ const Transfers = () => {
 
               {loadingAccounts && (
                 <p className="state-text">Cargando tus cuentas...</p>
-              )}
-
-              {!loadingAccounts && accounts.length === 0 && (
-                <p className="state-text">
-                  No tenés cuentas registradas para realizar transferencias.
-                </p>
               )}
 
               {!loadingAccounts && accounts.length > 0 && (
@@ -312,16 +377,28 @@ const Transfers = () => {
                     <h3>Terceros</h3>
                     <p>Transfiere a otras personas del mismo banco</p>
                   </button>
+
+                  <button
+                    className="transfer-type-card"
+                    onClick={() => handleTransferTypeSelect("external")}
+                  >
+                    <h3>Externa</h3>
+                    <p>Transfiere a otros bancos</p>
+                  </button>
                 </div>
               )}
             </div>
           )}
 
-          {/* Paso 2: Formulario */}
+          {/* ========== Paso 2: Formulario ========== */}
           {step === "form" && (
             <div className="transfers-form">
               <div className="transfer-type-badge">
-                {transferType === "own" ? "Cuentas Propias" : "Terceros"}
+                {transferType === "own"
+                  ? "Cuentas Propias"
+                  : transferType === "third-party"
+                  ? "Terceros"
+                  : "Externa"}
               </div>
 
               <div className="form-group">
@@ -475,7 +552,7 @@ const Transfers = () => {
             </div>
           )}
 
-          {/* Paso 3: Confirmación */}
+          {/* ========== Paso 3: Confirmación ========== */}
           {step === "confirm" && (
             <div className="transfers-confirm">
               <h3>Confirmar Transferencia</h3>
@@ -489,7 +566,9 @@ const Transfers = () => {
                   <span className="confirm-value">
                     {transferType === "own"
                       ? "Cuentas Propias"
-                      : "Terceros (mismo banco)"}
+                      : transferType === "third-party"
+                      ? "Terceros (mismo banco)"
+                      : "Externa (otro banco)"}
                   </span>
                 </div>
 
@@ -561,7 +640,7 @@ const Transfers = () => {
                 <button
                   type="button"
                   className="btn-primary"
-                  onClick={handleConfirmTransfer}
+                  onClick={handleConfirmClick}
                   disabled={processingTransfer}
                 >
                   {processingTransfer
@@ -572,7 +651,7 @@ const Transfers = () => {
             </div>
           )}
 
-          {/* Paso 4: Resultado */}
+          {/* ========== Paso 4: Resultado ========== */}
           {step === "result" && transferResult && (
             <div className="transfers-result">
               <div
