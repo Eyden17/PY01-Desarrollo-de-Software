@@ -370,14 +370,7 @@ const Transfers = () => {
                     <p>Transfiere entre tus propias cuentas</p>
                   </button>
 
-                  <button
-                    className="transfer-type-card"
-                    onClick={() => handleTransferTypeSelect("third-party")}
-                  >
-                    <h3>Terceros</h3>
-                    <p>Transfiere a otras personas del mismo banco</p>
-                  </button>
-
+                  
                   <button
                     className="transfer-type-card"
                     onClick={() => handleTransferTypeSelect("external")}
