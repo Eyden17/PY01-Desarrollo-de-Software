@@ -1,97 +1,128 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../assets/css/Transfers.css';
+// src/pages/Transfers.jsx
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../assets/css/Transfers.css";
+import { apiGet, apiPost } from "../services/apiClient";
+import { getCurrentUser } from "../services/authService";
 
-const Transfers = ({ userAccounts = [] }) => {
+const Transfers = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState('select'); // 'select', 'form', 'confirm', 'result'
+
+  // ========== NUEVO: Cuentas desde API ==========
+  const [accounts, setAccounts] = useState([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
+  const [globalError, setGlobalError] = useState(null);
+
+  const [step, setStep] = useState("select"); // 'select', 'form', 'confirm', 'result'
   const [transferType, setTransferType] = useState(null); // 'own', 'third-party'
   const [formData, setFormData] = useState({
-    sourceAccount: '',
-    destinationAccount: '',
-    currency: '',
-    amount: '',
-    description: ''
+    sourceAccount: "", 
+    destinationAccount: "", 
+    currency: "",
+    amount: "",
+    description: "",
   });
   const [destinationAccountInfo, setDestinationAccountInfo] = useState(null);
   const [transferResult, setTransferResult] = useState(null);
   const [errors, setErrors] = useState({});
-  const [isValidating, setIsValidating] = useState(false);
+  const [isValidating, setIsValidating] = useState(false); // lo dejamos por si expandes terceros
+  const [processingTransfer, setProcessingTransfer] = useState(false);
 
-  // Simula validación de cuenta de terceros
-  const validateThirdPartyAccount = async (accountNumber) => {
-    setIsValidating(true);
-    // Simulación - en producción sería una llamada a API
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const mockAccounts = {
-          '1234567890': { name: 'Juan Pérez González', accountType: 'Ahorro' },
-          '0987654321': { name: 'María Rodríguez López', accountType: 'Corriente' },
-          '5555555555': { name: 'Carlos Mora Jiménez', accountType: 'Ahorro' }
-        };
-        
-        setIsValidating(false);
-        if (mockAccounts[accountNumber]) {
-          resolve({ success: true, data: mockAccounts[accountNumber] });
-        } else {
-          resolve({ success: false, error: 'Cuenta no encontrada' });
-        }
-      }, 1000);
-    });
-  };
+  // ========== Cargar cuentas del usuario autenticado ==========
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (!user) {
+      navigate("/");
+      return;
+    }
+
+    const loadAccounts = async () => {
+      try {
+        setLoadingAccounts(true);
+        setGlobalError(null);
+
+        const res = await apiGet("/accounts");
+
+        let accItems = [];
+        if (Array.isArray(res)) accItems = res;
+        else if (Array.isArray(res?.data)) accItems = res.data;
+        else if (Array.isArray(res?.items)) accItems = res.items;
+        else if (Array.isArray(res?.accounts)) accItems = res.accounts;
+
+        const mappedAccounts = accItems.map((acc) => ({
+          id: acc.id,
+          name: acc.alias || acc.tipo_cuenta_nombre || "Cuenta Astralis",
+          number: acc.iban,
+          iban: acc.iban,
+          currency: acc.moneda_iso || acc.moneda_nombre || "CRC",
+          balance: Number(acc.saldo ?? 0),
+        }));
+
+        setAccounts(mappedAccounts);
+      } catch (err) {
+        console.error("Error cargando cuentas:", err);
+        setGlobalError("No se pudieron cargar tus cuentas.");
+      } finally {
+        setLoadingAccounts(false);
+      }
+    };
+
+    loadAccounts();
+  }, [navigate]);
 
   const handleTransferTypeSelect = (type) => {
     setTransferType(type);
-    setStep('form');
+    setStep("form");
     setFormData({
-      sourceAccount: '',
-      destinationAccount: '',
-      currency: '',
-      amount: '',
-      description: ''
+      sourceAccount: "",
+      destinationAccount: "",
+      currency: "",
+      amount: "",
+      description: "",
     });
     setErrors({});
+    setDestinationAccountInfo(null);
+    setTransferResult(null);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Limpia el error del campo
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
 
-    // Auto-selecciona una moneda cuando se elige cuenta origen
-    if (name === 'sourceAccount' && !formData.currency) {
-      const account = userAccounts.find(acc => acc.id === value);
+    if (name === "sourceAccount") {
+      const account = accounts.find((acc) => acc.id === value);
       if (account) {
-        setFormData(prev => ({ ...prev, currency: account.currency }));
+        setFormData((prev) => ({ ...prev, currency: account.currency }));
       }
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.sourceAccount) {
-      newErrors.sourceAccount = 'Selecciona una cuenta de origen';
+      newErrors.sourceAccount = "Selecciona una cuenta de origen";
     }
-    
+
     if (!formData.destinationAccount) {
-      newErrors.destinationAccount = 'Selecciona o ingresa una cuenta de destino';
+      newErrors.destinationAccount =
+        "Selecciona o ingresa una cuenta de destino";
     }
-    
+
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      newErrors.amount = 'Ingresa un monto válido';
+      newErrors.amount = "Ingresa un monto válido";
     }
-    
+
     if (!formData.currency) {
-      newErrors.currency = 'Selecciona una moneda';
+      newErrors.currency = "Selecciona una moneda";
     }
 
     if (formData.description && formData.description.length > 255) {
-      newErrors.description = 'La descripción no puede exceder 255 caracteres';
+      newErrors.description = "La descripción no puede exceder 255 caracteres";
     }
 
     setErrors(newErrors);
@@ -101,86 +132,137 @@ const Transfers = ({ userAccounts = [] }) => {
   const handleContinue = async () => {
     if (!validateForm()) return;
 
-    // Si es transferencia a terceros, validar la cuenta
-    if (transferType === 'third-party') {
-      const result = await validateThirdPartyAccount(formData.destinationAccount);
-      
-      if (!result.success) {
-        setErrors({ destinationAccount: result.error });
-        return;
+    if (transferType === "third-party") {
+      setIsValidating(true);
+      try {
+        setDestinationAccountInfo({
+          name: "Cuenta Astralis",
+        });
+      } finally {
+        setIsValidating(false);
       }
-      
-      setDestinationAccountInfo(result.data);
     }
 
-    setStep('confirm');
+    setStep("confirm");
   };
 
-  const handleConfirmTransfer = () => {
-    // Simulamos procesamiento de transferencia
-    setTimeout(() => {
-      const success = Math.random() > 0.1; // 90% éxito
-      
+  const getAccountName = (accountId) => {
+    const account = accounts.find((acc) => acc.id === accountId);
+    return account ? `${account.name} - ${account.number}` : "";
+  };
+
+  const getAvailableDestinationAccounts = () => {
+    return accounts.filter((acc) => acc.id !== formData.sourceAccount);
+  };
+
+  const isFormValid = () => {
+    return (
+      formData.sourceAccount &&
+      formData.destinationAccount &&
+      formData.amount &&
+      parseFloat(formData.amount) > 0 &&
+      formData.currency
+    );
+  };
+
+  // ========== CONFIRMAR TRANSFERENCIA (llama a /transfers/internal) ==========
+  const handleConfirmTransfer = async () => {
+    setProcessingTransfer(true);
+    setGlobalError(null);
+
+    try {
+      const fromAcc = accounts.find(
+        (acc) => acc.id === formData.sourceAccount
+      );
+      if (!fromAcc) {
+        setGlobalError("No se pudo encontrar la cuenta de origen.");
+        setProcessingTransfer(false);
+        return;
+      }
+
+      let toIban = "";
+
+      if (transferType === "own") {
+        const toAcc = accounts.find(
+          (acc) => acc.id === formData.destinationAccount
+        );
+        if (!toAcc) {
+          setGlobalError("No se pudo encontrar la cuenta de destino.");
+          setProcessingTransfer(false);
+          return;
+        }
+        toIban = toAcc.iban;
+      } else {
+        // Terceros: el usuario digitó el IBAN directamente
+        toIban = formData.destinationAccount;
+      }
+
+      const payload = {
+        from_iban: fromAcc.iban,
+        to_iban: toIban,
+        amount: parseFloat(formData.amount),
+        currency: formData.currency, // "CRC" / "USD"
+        description: formData.description || null,
+      };
+
+      const res = await apiPost("/transfers/internal", payload);
+      const data = res?.data || res;
+
       setTransferResult({
-        success,
-        transactionId: `TXN${Date.now()}`,
-        date: new Date().toLocaleString('es-CR', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        })
+        success: true,
+        transactionId:
+          data?.receipt_number || data?.transfer_id || `TXN${Date.now()}`,
+        date: new Date().toLocaleString("es-CR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
       });
-      
-      setStep('result');
-    }, 1500);
+
+      setStep("result");
+    } catch (err) {
+      console.error("Error realizando transferencia interna:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "No se pudo procesar tu transferencia.";
+      setGlobalError(msg);
+      setTransferResult({ success: false });
+      setStep("result");
+    } finally {
+      setProcessingTransfer(false);
+    }
   };
 
   const handleDownloadReceipt = () => {
-    // Placeholder para descargar el comprobante
-    alert('Función de descarga disponible próximamente');
+    alert("Función de descarga disponible próximamente");
   };
 
   const handleNewTransfer = () => {
-    setStep('select');
+    setStep("select");
     setTransferType(null);
     setFormData({
-      sourceAccount: '',
-      destinationAccount: '',
-      currency: '',
-      amount: '',
-      description: ''
+      sourceAccount: "",
+      destinationAccount: "",
+      currency: "",
+      amount: "",
+      description: "",
     });
     setDestinationAccountInfo(null);
     setTransferResult(null);
     setErrors({});
-  };
-
-  const getAccountName = (accountId) => {
-    const account = userAccounts.find(acc => acc.id === accountId);
-    return account ? `${account.name} - ${account.number}` : '';
-  };
-
-  const getAvailableDestinationAccounts = () => {
-    return userAccounts.filter(acc => acc.id !== formData.sourceAccount);
-  };
-
-  const isFormValid = () => {
-    return formData.sourceAccount && 
-           formData.destinationAccount && 
-           formData.amount && 
-           parseFloat(formData.amount) > 0 && 
-           formData.currency;
+    setGlobalError(null);
   };
 
   return (
     <div className="transfers-page">
       <div className="transfers-container">
         <div className="transfers-header">
-          <button 
-            className="transfers-back-btn" 
+          <button
+            className="transfers-back-btn"
             onClick={() => navigate(-1)}
             aria-label="Volver"
           >
@@ -189,36 +271,57 @@ const Transfers = ({ userAccounts = [] }) => {
           <h1>Transferencias</h1>
         </div>
 
+        {globalError && (
+          <p className="state-text state-error" style={{ marginBottom: 12 }}>
+            {globalError}
+          </p>
+        )}
+
         <div className="transfers-content">
           {/* Paso 1: Selección de tipo */}
-          {step === 'select' && (
+          {step === "select" && (
             <div className="transfers-type-selection">
-              <p className="transfers-instruction">Selecciona el tipo de transferencia:</p>
-              <div className="transfers-type-cards">
-                <button 
-                  className="transfer-type-card"
-                  onClick={() => handleTransferTypeSelect('own')}
-                >
-                  <h3>Cuentas Propias</h3>
-                  <p>Transfiere entre tus propias cuentas</p>
-                </button>
-                
-                <button 
-                  className="transfer-type-card"
-                  onClick={() => handleTransferTypeSelect('third-party')}
-                >
-                  <h3>Terceros</h3>
-                  <p>Transfiere a otras personas del mismo banco</p>
-                </button>
-              </div>
+              <p className="transfers-instruction">
+                Selecciona el tipo de transferencia:
+              </p>
+
+              {loadingAccounts && (
+                <p className="state-text">Cargando tus cuentas...</p>
+              )}
+
+              {!loadingAccounts && accounts.length === 0 && (
+                <p className="state-text">
+                  No tenés cuentas registradas para realizar transferencias.
+                </p>
+              )}
+
+              {!loadingAccounts && accounts.length > 0 && (
+                <div className="transfers-type-cards">
+                  <button
+                    className="transfer-type-card"
+                    onClick={() => handleTransferTypeSelect("own")}
+                  >
+                    <h3>Cuentas Propias</h3>
+                    <p>Transfiere entre tus propias cuentas</p>
+                  </button>
+
+                  <button
+                    className="transfer-type-card"
+                    onClick={() => handleTransferTypeSelect("third-party")}
+                  >
+                    <h3>Terceros</h3>
+                    <p>Transfiere a otras personas del mismo banco</p>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
           {/* Paso 2: Formulario */}
-          {step === 'form' && (
+          {step === "form" && (
             <div className="transfers-form">
               <div className="transfer-type-badge">
-                {transferType === 'own' ? 'Cuentas Propias' : 'Terceros'}
+                {transferType === "own" ? "Cuentas Propias" : "Terceros"}
               </div>
 
               <div className="form-group">
@@ -228,31 +331,43 @@ const Transfers = ({ userAccounts = [] }) => {
                   name="sourceAccount"
                   value={formData.sourceAccount}
                   onChange={handleInputChange}
-                  className={errors.sourceAccount ? 'error' : ''}
+                  className={errors.sourceAccount ? "error" : ""}
+                  disabled={loadingAccounts || accounts.length === 0}
                 >
-                  <option value="" disabled hidden>Selecciona una cuenta</option>
-                  {userAccounts.map(account => (
+                  <option value="" disabled hidden>
+                    {loadingAccounts
+                      ? "Cargando cuentas..."
+                      : "Selecciona una cuenta"}
+                  </option>
+                  {accounts.map((account) => (
                     <option key={account.id} value={account.id}>
-                      {account.name} - {account.number} ({account.currency} {account.balance.toFixed(2)})
+                      {account.name} - {account.number} ({account.currency}{" "}
+                      {account.balance.toFixed(2)})
                     </option>
                   ))}
                 </select>
-                {errors.sourceAccount && <span className="error-message">{errors.sourceAccount}</span>}
+                {errors.sourceAccount && (
+                  <span className="error-message">
+                    {errors.sourceAccount}
+                  </span>
+                )}
               </div>
 
               <div className="form-group">
                 <label htmlFor="destinationAccount">Cuenta Destino *</label>
-                {transferType === 'own' ? (
+                {transferType === "own" ? (
                   <select
                     id="destinationAccount"
                     name="destinationAccount"
                     value={formData.destinationAccount}
                     onChange={handleInputChange}
-                    className={errors.destinationAccount ? 'error' : ''}
+                    className={errors.destinationAccount ? "error" : ""}
                     disabled={!formData.sourceAccount}
                   >
-                    <option value="" disabled hidden>Selecciona una cuenta</option>
-                    {getAvailableDestinationAccounts().map(account => (
+                    <option value="" disabled hidden>
+                      Selecciona una cuenta
+                    </option>
+                    {getAvailableDestinationAccounts().map((account) => (
                       <option key={account.id} value={account.id}>
                         {account.name} - {account.number}
                       </option>
@@ -265,13 +380,19 @@ const Transfers = ({ userAccounts = [] }) => {
                     name="destinationAccount"
                     value={formData.destinationAccount}
                     onChange={handleInputChange}
-                    placeholder="Ingresa el número de cuenta"
-                    className={errors.destinationAccount ? 'error' : ''}
-                    maxLength="20"
+                    placeholder="Ingresa el IBAN de la cuenta destino"
+                    className={errors.destinationAccount ? "error" : ""}
+                    maxLength="34"
                   />
                 )}
-                {errors.destinationAccount && <span className="error-message">{errors.destinationAccount}</span>}
-                {isValidating && <span className="info-message">Validando cuenta...</span>}
+                {errors.destinationAccount && (
+                  <span className="error-message">
+                    {errors.destinationAccount}
+                  </span>
+                )}
+                {isValidating && (
+                  <span className="info-message">Validando cuenta...</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -281,13 +402,17 @@ const Transfers = ({ userAccounts = [] }) => {
                   name="currency"
                   value={formData.currency}
                   onChange={handleInputChange}
-                  className={errors.currency ? 'error' : ''}
+                  className={errors.currency ? "error" : ""}
                 >
-                  <option value="" disabled hidden>Selecciona moneda</option>
+                  <option value="" disabled hidden>
+                    Selecciona moneda
+                  </option>
                   <option value="CRC">CRC - Colones</option>
                   <option value="USD">USD - Dólares</option>
                 </select>
-                {errors.currency && <span className="error-message">{errors.currency}</span>}
+                {errors.currency && (
+                  <span className="error-message">{errors.currency}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -301,9 +426,11 @@ const Transfers = ({ userAccounts = [] }) => {
                   placeholder="0.00"
                   step="0.01"
                   min="0"
-                  className={errors.amount ? 'error' : ''}
+                  className={errors.amount ? "error" : ""}
                 />
-                {errors.amount && <span className="error-message">{errors.amount}</span>}
+                {errors.amount && (
+                  <span className="error-message">{errors.amount}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -316,25 +443,31 @@ const Transfers = ({ userAccounts = [] }) => {
                   placeholder="Agrega una descripción..."
                   maxLength="255"
                   rows="3"
-                  className={errors.description ? 'error' : ''}
+                  className={errors.description ? "error" : ""}
                 />
-                <span className="char-count">{formData.description.length}/255</span>
-                {errors.description && <span className="error-message">{errors.description}</span>}
+                <span className="char-count">
+                  {formData.description.length}/255
+                </span>
+                {errors.description && (
+                  <span className="error-message">
+                    {errors.description}
+                  </span>
+                )}
               </div>
 
               <div className="form-actions">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-secondary"
-                  onClick={() => setStep('select')}
+                  onClick={() => setStep("select")}
                 >
                   Atrás
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-primary"
                   onClick={handleContinue}
-                  disabled={!isFormValid() || isValidating}
+                  disabled={!isFormValid() || isValidating || loadingAccounts}
                 >
                   Continuar
                 </button>
@@ -343,92 +476,123 @@ const Transfers = ({ userAccounts = [] }) => {
           )}
 
           {/* Paso 3: Confirmación */}
-          {step === 'confirm' && (
+          {step === "confirm" && (
             <div className="transfers-confirm">
               <h3>Confirmar Transferencia</h3>
-              <p className="confirm-subtitle">Verifica los datos antes de confirmar</p>
+              <p className="confirm-subtitle">
+                Verifica los datos antes de confirmar
+              </p>
 
               <div className="confirm-details">
                 <div className="confirm-item">
                   <span className="confirm-label">Tipo:</span>
                   <span className="confirm-value">
-                    {transferType === 'own' ? 'Cuentas Propias' : 'Terceros'}
+                    {transferType === "own"
+                      ? "Cuentas Propias"
+                      : "Terceros (mismo banco)"}
                   </span>
                 </div>
 
                 <div className="confirm-item">
                   <span className="confirm-label">Desde:</span>
-                  <span className="confirm-value">{getAccountName(formData.sourceAccount)}</span>
+                  <span className="confirm-value">
+                    {getAccountName(formData.sourceAccount)}
+                  </span>
                 </div>
 
                 <div className="confirm-item">
                   <span className="confirm-label">Hacia:</span>
                   <span className="confirm-value">
-                    {transferType === 'own' 
+                    {transferType === "own"
                       ? getAccountName(formData.destinationAccount)
-                      : `${formData.destinationAccount} - ${destinationAccountInfo?.name}`
-                    }
+                      : `${formData.destinationAccount}${
+                          destinationAccountInfo?.name
+                            ? ` - ${destinationAccountInfo.name}`
+                            : ""
+                        }`}
                   </span>
                 </div>
 
                 <div className="confirm-item">
                   <span className="confirm-label">Monto:</span>
                   <span className="confirm-value highlight">
-                    {formData.currency} {parseFloat(formData.amount).toFixed(2)}
+                    {formData.currency}{" "}
+                    {parseFloat(formData.amount).toFixed(2)}
                   </span>
                 </div>
 
                 {formData.description && (
                   <div className="confirm-item">
                     <span className="confirm-label">Descripción:</span>
-                    <span className="confirm-value">{formData.description}</span>
+                    <span className="confirm-value">
+                      {formData.description}
+                    </span>
                   </div>
                 )}
 
                 <div className="confirm-item">
                   <span className="confirm-label">Fecha:</span>
                   <span className="confirm-value">
-                    {new Date().toLocaleString('es-CR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
+                    {new Date().toLocaleString("es-CR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </span>
                 </div>
               </div>
 
+              {globalError && (
+                <p className="state-text state-error" style={{ marginTop: 8 }}>
+                  {globalError}
+                </p>
+              )}
+
               <div className="form-actions">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-secondary"
-                  onClick={() => setStep('form')}
+                  onClick={() => setStep("form")}
                 >
                   Modificar
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-primary"
                   onClick={handleConfirmTransfer}
+                  disabled={processingTransfer}
                 >
-                  Confirmar Transferencia
+                  {processingTransfer
+                    ? "Procesando..."
+                    : "Confirmar Transferencia"}
                 </button>
               </div>
             </div>
           )}
 
           {/* Paso 4: Resultado */}
-          {step === 'result' && transferResult && (
+          {step === "result" && transferResult && (
             <div className="transfers-result">
-              <div className={`result-icon ${transferResult.success ? 'success' : 'error'}`}>
-                {transferResult.success ? '✓' : '✕'}
+              <div
+                className={`result-icon ${
+                  transferResult.success ? "success" : "error"
+                }`}
+              >
+                {transferResult.success ? "✓" : "✕"}
               </div>
-              
-              <h3 className={transferResult.success ? 'success-text' : 'error-text'}>
-                {transferResult.success ? '¡Transferencia Exitosa!' : 'Transferencia Fallida'}
+
+              <h3
+                className={
+                  transferResult.success ? "success-text" : "error-text"
+                }
+              >
+                {transferResult.success
+                  ? "¡Transferencia Exitosa!"
+                  : "Transferencia Fallida"}
               </h3>
-              
+
               {transferResult.success ? (
                 <>
                   <p className="result-message">
@@ -439,49 +603,61 @@ const Transfers = ({ userAccounts = [] }) => {
                     <h4>Comprobante de Transferencia</h4>
                     <div className="receipt-item">
                       <span>ID Transacción:</span>
-                      <span className="receipt-value">{transferResult.transactionId}</span>
+                      <span className="receipt-value">
+                        {transferResult.transactionId}
+                      </span>
                     </div>
                     <div className="receipt-item">
                       <span>Fecha y Hora:</span>
-                      <span className="receipt-value">{transferResult.date}</span>
+                      <span className="receipt-value">
+                        {transferResult.date}
+                      </span>
                     </div>
                     <div className="receipt-item">
                       <span>Desde:</span>
-                      <span className="receipt-value">{getAccountName(formData.sourceAccount)}</span>
+                      <span className="receipt-value">
+                        {getAccountName(formData.sourceAccount)}
+                      </span>
                     </div>
                     <div className="receipt-item">
                       <span>Hacia:</span>
                       <span className="receipt-value">
-                        {transferType === 'own' 
+                        {transferType === "own"
                           ? getAccountName(formData.destinationAccount)
-                          : `${formData.destinationAccount} - ${destinationAccountInfo?.name}`
-                        }
+                          : `${formData.destinationAccount}${
+                              destinationAccountInfo?.name
+                                ? ` - ${destinationAccountInfo.name}`
+                                : ""
+                            }`}
                       </span>
                     </div>
                     <div className="receipt-item highlight">
                       <span>Monto:</span>
                       <span className="receipt-value">
-                        {formData.currency} {parseFloat(formData.amount).toFixed(2)}
+                        {formData.currency}{" "}
+                        {parseFloat(formData.amount).toFixed(2)}
                       </span>
                     </div>
                     {formData.description && (
                       <div className="receipt-item">
                         <span>Descripción:</span>
-                        <span className="receipt-value">{formData.description}</span>
+                        <span className="receipt-value">
+                          {formData.description}
+                        </span>
                       </div>
                     )}
                   </div>
 
                   <div className="result-actions">
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn-secondary"
                       onClick={handleDownloadReceipt}
                     >
                       Descargar Comprobante
                     </button>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn-primary"
                       onClick={handleNewTransfer}
                     >
@@ -492,13 +668,14 @@ const Transfers = ({ userAccounts = [] }) => {
               ) : (
                 <>
                   <p className="result-message">
-                    No se pudo procesar tu transferencia. Por favor, intenta nuevamente.
+                    {globalError ||
+                      "No se pudo procesar tu transferencia. Por favor, intenta nuevamente."}
                   </p>
                   <div className="result-actions">
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn-primary"
-                      onClick={() => setStep('form')}
+                      onClick={() => setStep("form")}
                     >
                       Reintentar
                     </button>

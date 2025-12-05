@@ -1,4 +1,3 @@
-// src/services/apiClient.js
 import { getToken, clearSession } from "./authService";
 
 const API_URL = process.env.REACT_APP_API_URL;
